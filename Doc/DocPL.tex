@@ -37,9 +37,61 @@
 
 \section{Opis programu}
 
+Program \textit{PeerSharing} pozwala na współdzielenie plików między różnymi urządzeniami przez sieć.
+
+\textit{PeerSharing} jest programem działającym na systemy operacyjne:
+\begin{itemize}
+	\item Windows 7 lub nowszy
+	\item Linux - np. Ubuntu w wersji 14.04 lub nowszej
+	\item macOS w wersji 10.12 lub nowszej
+	\item Android w wersji 1.6 lub nowszej
+	\item iOS w wersji 8.0 lub nowszej
+\end{itemize}
+
+W dalszej części dokumentacji program \textit{PeerSharing} będzie nazywany \textit{programem}.
+
+\subsection{Opis pojęć}
+
+W dalszej części dokumentacji zostały przedstawione opisy wymagań w których są użyte określenia opisane poniżej:
+
+\begin{description}
+	\item[Komputer] to urządzenie na którym jest zainstalowany jeden z kompatybilnych systemów operacyjnych: Windows, Linux lub macOS. Urządzenie to również posiada zainstalowany program i jest podłączone do sieci LAN i ma dostęp do Internetu.
+	\item[Smartphone] to urządzenie mobilne, które posiada zainstalowany jeden z mobilnych systemów operacyjnych, który jest kompatybilny z programem: Android lub iOS. Jednocześnie na tym urządzeniu jest zainstalowany program oraz urządzenie jest podłączone do sieci LAN i ma dostęp do Internetu.
+	\item[Urządzenie] to komputer lub smartphone.
+	\item[Użytkownik] jest to osoba aktualnie obsługująca program za pomocą komputera lub smartphona.
+	\item[Program] to program \textit{PeerSharing}, która aktualnie działa na urządzeniu użytkownika i może wykonywać operacje w tle.
+
+\end{description}
+
 \section{Wymagania funkcjonalne}
+W tej sekcji znajduje się opis wymagań funkcjonalnych. Wiersz oznaczony gwiazdką (\textbf{*}) oznacza, że jest to czynność opcjonalna, niewpływająca na pozostałe czynności.
+
+\begin{center}
+	\begin{tabular}{|l|p{5em}|p{30em}|}
+	\hline 
+	 & Wykonawca & Czynność \\ 
+	\hline 
+	1 & Użytkownik & Odświeżenie listy dostępnych urządzeń w sieci LAN za pomocą przycisku odświeżania. \\ 
+	\hline 
+	2 & Użytkownik & Wybranie urządzenia z listy nazw urządzeń dostępnych w sieci LAN. \\ 
+	\hline 
+	3* & Użytkownik & Wybranie katalogu w celu wyświetlenia jego zawartości. \\
+	\hline
+	4 & Użytkownik & Wybranie pliku do pobrania na własne urządzenie. \\
+	\hline
+	
+	\end{tabular} 
+\end{center}
 
 \section{Wymagania pozafunkcjonalne}
+
+\begin{enumerate}
+	\item Program pozwala wyszukać inne urządzenia posiadające działający program.
+	\item Program pozwala przeszukiwać foldery, które zostały udostępnione w programie na innych urządzeniach.
+	\item Program pozwala zobaczyć udostępnione dane tylko z jednego urządzenia w danej chwili.
+	\item Program pozwala się połączyć z innym urządzeniem, które nie znajduje się w tej samej sieci LAN, po wprowadzeniu IP drugiego urządzenia. Jednocześnie zakładając, że porty są otwarte.
+
+\end{enumerate}
 
 \section{Makiety}
 
