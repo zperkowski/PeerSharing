@@ -39,13 +39,15 @@
 
 Program \textit{PeerSharing} pozwala na współdzielenie plików między różnymi urządzeniami przez sieć.
 
+\begin{center}
+\href{https://github.com/zperkowski/PeerSharing}{GitHub.com/zperkowski/PeerSharing}
+\end{center}
+
 \textit{PeerSharing} jest programem działającym na systemy operacyjne:
 \begin{itemize}
 	\item Windows 7 lub nowszy
-	\item Linux - np. Ubuntu w wersji 14.04 lub nowszej
 	\item macOS w wersji 10.12 lub nowszej
 	\item Android w wersji 1.6 lub nowszej
-	\item iOS w wersji 8.0 lub nowszej
 \end{itemize}
 
 W dalszej części dokumentacji program \textit{PeerSharing} będzie nazywany \textit{programem}.
@@ -96,13 +98,38 @@ W tej sekcji znajduje się opis wymagań funkcjonalnych. Wiersz oznaczony gwiazd
 	\hline
 	1 & Użytkownik & Użycie przycisku dodania urządzenia poza siecią LAN. \\
 	\hline
-	2 & Program & Przełączenie okna na ekran pozwalający wpisać IP drugiego urządzenia.\\
+	2 & Program & Pokazanie miejsca pozwalającego wpisać IP drugiego urządzenia.\\
 	\hline
 	3 & Użytkownik & Wpisanie poprawnego IP drugiego urządzenia z włączonym programem. \\
 	\hline
 	4 & Użytkownik & Użycie przycisku rozpoczęcia połączenia z drugim urządzeniem. \\ 
 	\hline
 	5 & Program & Program łączy się z urządzeniem o określonym IP i wyświetla zawartość udostępnionego folderu na nowym ekranie, gdy połączenie zakończyło się pomyślnie. \\
+	\hline
+	\end{tabular} 
+	
+	\subsection{Scenariusze alternatywne}
+	
+	\begin{tabular}{|l|p{5em}|p{30em}|}
+	\hline 
+	 & Wykonawca & Czynność \\
+	\hline
+	1 & Użytkownik & Włączenie programu. \\
+	\hline
+	2 & Program & Próba przeszukania sieci przy braku połączenia z siecią. \\
+	\hline
+	3 & Program & Wyświetlenie komunikatu o braku połączenia. \\
+	\hline
+	\hline
+	1 & Użytkownik & Użycie przycisku dodania urządzenia poza siecią LAN. \\
+	\hline
+	2 & Program & Pokazanie miejsca pozwalającego wpisać IP drugiego urządzenia.\\
+	\hline
+	3 & Użytkownik & Wpisanie poprawnego IP drugiego urządzenia z włączonym programem. \\
+	\hline
+	4 & Użytkownik & Użycie przycisku rozpoczęcia połączenia z drugim urządzeniem. \\ 
+	\hline
+	5 & Program & Brak połączenia z Internetem jest sygnalizowane użytkownikowi komunikatem. \\
 	\hline
 	\end{tabular} 
 \end{center}
