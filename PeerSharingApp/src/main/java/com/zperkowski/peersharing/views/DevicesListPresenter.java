@@ -20,16 +20,16 @@ public class DevicesListPresenter extends GluonPresenter<PeerSharing> {
 
     @FXML
     private ResourceBundle resources;
-    
+
     public void initialize() {
         deviceslist.showingProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue) {
                 AppBar appBar = getApp().getAppBar();
                 appBar.setNavIcon(MaterialDesignIcon.MENU.button(e -> 
                         getApp().showLayer(DRAWER_LAYER)));
-                appBar.setTitleText("Home");
+                appBar.setTitleText(resources.getString("app_name"));
                 appBar.getActionItems().add(MaterialDesignIcon.SEARCH.button(e -> 
-                        System.out.println("Search")));
+                        System.out.println(resources.getString("search"))));
             }
         });
     }
@@ -38,5 +38,5 @@ public class DevicesListPresenter extends GluonPresenter<PeerSharing> {
     void buttonClick() {
         label.setText(resources.getString("label.text.2"));
     }
-    
+
 }

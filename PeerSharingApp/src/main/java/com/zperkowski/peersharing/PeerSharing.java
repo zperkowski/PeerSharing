@@ -7,10 +7,14 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import java.util.Locale;
+
 public class PeerSharing extends MobileApplication {
 
     @Override
     public void init() {
+        Locale.setDefault(new Locale("en", "EN"));
+//        Locale.setDefault(new Locale("pl", "PL"));
         AppViewManager.registerViewsAndDrawer(this);
     }
 

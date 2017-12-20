@@ -10,15 +10,20 @@ import com.gluonhq.charm.glisten.visual.MaterialDesignIcon;
 import com.zperkowski.peersharing.PeerSharing;
 import javafx.fxml.FXML;
 
+import java.util.ResourceBundle;
+
 public class ConnectedDevicePresenter extends GluonPresenter<PeerSharing> {
 
     @FXML
     private View connecteddevice;
 
+    @FXML
+    private ResourceBundle resources;
+
     public void initialize() {
         connecteddevice.setShowTransitionFactory(BounceInRightTransition::new);
         
-        connecteddevice.getLayers().add(new FloatingActionButton(MaterialDesignIcon.INFO.text, 
+        connecteddevice.getLayers().add(new FloatingActionButton(MaterialDesignIcon.INFO.text,
             e -> System.out.println("Info")).getLayer());
         
         connecteddevice.showingProperty().addListener((obs, oldValue, newValue) -> {
@@ -26,7 +31,7 @@ public class ConnectedDevicePresenter extends GluonPresenter<PeerSharing> {
                 AppBar appBar = getApp().getAppBar();
                 appBar.setNavIcon(MaterialDesignIcon.MENU.button(e -> 
                         getApp().showLayer(DRAWER_LAYER)));
-                appBar.setTitleText("ConnectedDevice");
+                appBar.setTitleText(resources.getString("title"));
                 appBar.getActionItems().add(MaterialDesignIcon.FAVORITE.button(e -> 
                         System.out.println("Favorite")));
             }
