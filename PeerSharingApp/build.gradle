@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'org.javafxports:jfxmobile-plugin:1.3.9'
+        classpath 'org.javafxports:jfxmobile-plugin:1.3.10'
     }
 }
 
@@ -16,10 +16,11 @@ repositories {
     }
 }
 
-mainClassName = 'com.zperkowski.PeerSharing'
+mainClassName = 'com.zperkowski.peersharing.PeerSharing'
 
 dependencies {
     compile 'com.gluonhq:charm:4.4.1'
+    compile 'com.gluonhq:glisten-afterburner:1.2.1'
 }
 
 jfxmobile {
@@ -34,6 +35,7 @@ jfxmobile {
     ios {
         infoPList = file('src/ios/Default-Info.plist')
         forceLinkClasses = [
+                'com.zperkowski.peersharing.**.*',
                 'com.gluonhq.**.*',
                 'javax.annotations.**.*',
                 'javax.inject.**.*',
