@@ -40,10 +40,9 @@ public class SimpleCardAdapter extends RecyclerView.Adapter<SimpleCardAdapter.Ca
         @Override
         public void onClick(View view) {
             Log.d(TAG, "onClick() " + String.valueOf(ip.getText()));
-            Intent intent = new Intent(itemView.getContext(), DownloadService.class);
-            intent.setAction(DownloadService.ACTION_DOWNLOAD);
-            intent.putExtra(DownloadService.EXTRA_IP, ip.getText());
-            intent.putExtra(DownloadService.EXTRA_PATH, "/tmp/1.pdf");
+            Intent intent = new Intent(itemView.getContext(), NetworkService.class);
+            intent.setAction(NetworkService.ACTION_GETFILES);
+            intent.putExtra(NetworkService.EXTRA_IP, ip.getText());
             context.startService(intent);
         }
     }

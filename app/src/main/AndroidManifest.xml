@@ -21,7 +21,7 @@
         </activity>
 
         <service
-            android:name=".DownloadService"
+            android:name=".NetworkService"
             android:exported="false"></service>
     </application>
 

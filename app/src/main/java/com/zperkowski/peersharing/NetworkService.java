@@ -4,15 +4,17 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
-public class DownloadService extends IntentService {
-    static final private String TAG = "DownloadService";
+public class NetworkService extends IntentService {
+    static final private String TAG = "NetworkService";
     public static final String ACTION_DOWNLOAD = "com.zperkowski.peersharing.action.DOWNLOAD";
+    public static final String ACTION_REFRESH = "com.zperkowski.peersharing.action.REFRESH";
+    public static final String ACTION_GETFILES = "com.zperkowski.peersharing.action.GETFILES";
 
     public static final String EXTRA_IP = "com.zperkowski.peersharing.extra.PARAM1";
     public static final String EXTRA_PATH = "com.zperkowski.peersharing.extra.PARAM2";
 
-    public DownloadService() {
-        super("DownloadService");
+    public NetworkService() {
+        super("NetworkService");
     }
 
     @Override
@@ -23,8 +25,21 @@ public class DownloadService extends IntentService {
                 final String param1 = intent.getStringExtra(EXTRA_IP);
                 final String param2 = intent.getStringExtra(EXTRA_PATH);
                 downloadFile(param1, param2);
+            } else if (ACTION_GETFILES.equals(action)) {
+                final String ipParam = intent.getStringExtra(EXTRA_IP);
+                getFiles(ipParam);
+            } else if (ACTION_REFRESH.equals(action)) {
+                refresh();
             }
         }
+    }
+
+    private void refresh() {
+        Log.d(TAG, "refresh()");
+    }
+
+    private void getFiles(String ip) {
+        Log.d(TAG, "getFiles(" + ip + ")");
     }
 
     private void downloadFile(String ip, String path) {
