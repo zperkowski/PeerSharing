@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">PeerSharing</string>
     <string name="action_settings">Settings</string>
+    <string name="refreshed">List has been refreshed</string>
+    <string name="downloading">Downloading…</string>
+    <string name="downloaded">Downloaded</string>
 </resources>
