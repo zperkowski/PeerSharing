@@ -44,15 +44,28 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new SimpleCardAdapter(phones, getApplicationContext()));
 
+        final Intent intent = new Intent(getApplicationContext(), NetworkService.class);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-            Intent intent = new Intent(getApplicationContext(), NetworkService.class);
-            intent.setAction(NetworkService.ACTION_REFRESH);
-            startService(intent);
+                Client client = new Client("192.168.1.3", 5555);
+                client.execute();
             }
         });
+
+
+        intent.setAction(NetworkService.ACTION_STARTSERVER);
+        startService(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        Intent intent = new Intent(getApplicationContext(), NetworkService.class);
+        intent.setAction(NetworkService.ACTION_STOPSERVER);
+        startService(intent);
+        super.onDestroy();
     }
 
     @Override

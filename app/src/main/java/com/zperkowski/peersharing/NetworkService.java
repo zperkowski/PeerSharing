@@ -10,11 +10,24 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+
 public class NetworkService extends IntentService {
     static final private String TAG = "NetworkService";
     public static final String ACTION_DOWNLOAD = "com.zperkowski.peersharing.action.DOWNLOAD";
     public static final String ACTION_REFRESH = "com.zperkowski.peersharing.action.REFRESH";
     public static final String ACTION_GETFILES = "com.zperkowski.peersharing.action.GETFILES";
+    public static final String ACTION_STARTSERVER = "com.zperkowski.peersharing.action.STARTSERVER";
+    public static final String ACTION_STOPSERVER = "com.zperkowski.peersharing.action.STOPSERVER";
 
     public static final String EXTRA_IP = "com.zperkowski.peersharing.extra.PARAM1";
     public static final String EXTRA_PATH = "com.zperkowski.peersharing.extra.PARAM2";
@@ -46,8 +59,22 @@ public class NetworkService extends IntentService {
                 getFiles(ipParam);
             } else if (ACTION_REFRESH.equals(action)) {
                 refresh();
+            } else if (ACTION_STARTSERVER.equals(action)) {
+                startServer();
+            } else if (ACTION_STOPSERVER.equals(action)) {
+                stopServer();
             }
         }
+    }
+
+    private void stopServer() {
+        Log.d(TAG, "stopServer()");
+        Server.getServer().stopServer();
+    }
+
+    private void startServer() {
+        Log.d(TAG, "startServer()");
+        Server.getServer().startServer();
     }
 
     private void refresh() {
