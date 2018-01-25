@@ -17,18 +17,12 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    protected ArrayList<Phone> phones = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private static ArrayList<Phone> phones = new ArrayList<>();
+    private Client client;
 
-    private void scanNetwork(List<Phone> phones) {
-        //Dumb data
-        phones.add(new Phone("192.168.1.100"));
-        phones.add(new Phone("192.168.1.101"));
-        phones.add(new Phone("192.168.1.102"));
-        phones.add(new Phone("192.168.1.103"));
-        phones.add(new Phone("192.168.1.104"));
-        phones.add(new Phone("192.168.1.105"));
-        phones.add(new Phone("192.168.1.106"));
-        phones.add(new Phone("192.168.1.107"));
+    public static void addPhoneToList(Phone phone) {
+        phones.add(phone);
     }
 
     @Override
@@ -38,8 +32,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        scanNetwork(phones);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.phone_list);
+        recyclerView = (RecyclerView) findViewById(R.id.phone_list);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new SimpleCardAdapter(phones, getApplicationContext()));
@@ -50,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Client client = new Client("192.168.1.3", 5555);
+                client = new Client("192.168.1.12", Server.getPort());
                 client.execute();
             }
         });
@@ -65,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), NetworkService.class);
         intent.setAction(NetworkService.ACTION_STOPSERVER);
         startService(intent);
+        client.cancel(true);
         super.onDestroy();
     }
 

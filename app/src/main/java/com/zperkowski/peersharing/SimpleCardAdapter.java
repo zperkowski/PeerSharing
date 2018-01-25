@@ -66,12 +66,12 @@ public class SimpleCardAdapter extends RecyclerView.Adapter<SimpleCardAdapter.Ca
     public void onBindViewHolder(CardViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder()");
         holder.name.setText(algorithms.get(position).getName());
-        holder.ip.setText(algorithms.get(position).getIp());
+        holder.ip.setText(algorithms.get(position).getAddress().toString());
     }
 
     @Override
     public int getItemCount() {
-        Log.d(TAG, "getItemCount()");
+        //Log.d(TAG, "getItemCount()");
         return algorithms.size();
     }
 }

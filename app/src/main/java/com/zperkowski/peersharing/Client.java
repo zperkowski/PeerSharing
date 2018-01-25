@@ -15,6 +15,7 @@ public class Client extends AsyncTask<Void, Void, String> {
     private int dstPort;
     private String response = "";
     final static private String TAG = "Client";
+    private Socket socket = null;
 
     Client(String addr, int port) {
         dstAddress = addr;
@@ -22,11 +23,22 @@ public class Client extends AsyncTask<Void, Void, String> {
     }
 
     @Override
-    protected String doInBackground(Void... arg0) {
-
-        Socket socket = null;
-
+    protected void onCancelled() {
         try {
+            Log.d(TAG, "Closing Client socket");
+            if (socket != null)
+                socket.close();
+            Log.d(TAG, "Closed Client socket");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        super.onCancelled();
+    }
+
+    @Override
+    protected String doInBackground(Void... arg0) {
+        try {
+            Log.d(TAG, "Running...");
             socket = new Socket(dstAddress, dstPort);
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(
@@ -39,10 +51,13 @@ public class Client extends AsyncTask<Void, Void, String> {
 			/*
              * notice: inputStream.read() will block if no data return
 			 */
+            Log.d(TAG, "Listening...");
             while ((bytesRead = inputStream.read(buffer)) != -1) {
+                Log.d(TAG, "Reading...");
                 byteArrayOutputStream.write(buffer, 0, bytesRead);
                 response += byteArrayOutputStream.toString("UTF-8");
             }
+            Log.d(TAG, "Read");
 
         } catch (UnknownHostException e) {
             // TODO Auto-generated catch block

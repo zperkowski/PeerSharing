@@ -1,5 +1,6 @@
 package com.zperkowski.peersharing;
 
+import android.app.Application;
 import android.util.Log;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ public class Server {
     private ServerThread serverThread;
     private ServerSocket serverSocket;
     private String message;
-    private final static int PORT = 5555;
+    private final static int PORT = 6666;
 
     public static Server getServer() {
         Log.d(TAG, "getServer()");
@@ -52,6 +53,8 @@ public class Server {
                         + socket.getInetAddress() + ":"
                         + socket.getPort() + "\n";
                 Log.d(TAG, message);
+                MainActivity.addPhoneToList(new Phone(socket.getInetAddress()));
+
                 SocketServerReplyThread replyThread = new SocketServerReplyThread(socket);
             } catch (IOException e) {
                 Log.e(TAG, "ServerThread.run() error");

@@ -1,16 +1,18 @@
 package com.zperkowski.peersharing;
 
+import java.net.InetAddress;
+
 /**
  * Created by zperkowski on 22/01/2018.
  */
 
 public class Phone {
     String name;
-    String ip;
+    InetAddress address;
 
-    public Phone(String ip) {
-        this.ip = ip;
-        this.name = ip.substring(0, 3);
+    public Phone(InetAddress address) {
+        this.address = address;
+        this.name = "Name";
     }
 
     public String getName() {
@@ -21,11 +23,11 @@ public class Phone {
         this.name = name;
     }
 
-    public String getIp() {
-        return ip;
+    public InetAddress getAddress() {
+        return address;
     }
 
-    public void setIp(String ip) {
-        this.ip = ip;
+    public void setAddress(InetAddress address) {
+        this.address = address;
     }
 }
