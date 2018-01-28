@@ -47,15 +47,17 @@ public class Server {
         @Override
         public void run() {
             try {
+                message = "";
                 serverSocket = new ServerSocket(PORT);
                 Socket socket = serverSocket.accept();
-                message += " from "
+                message += "Connection from "
                         + socket.getInetAddress() + ":"
                         + socket.getPort() + "\n";
                 Log.d(TAG, message);
                 MainActivity.addPhoneToList(new Phone(socket.getInetAddress()));
 
                 SocketServerReplyThread replyThread = new SocketServerReplyThread(socket);
+                replyThread.run();
             } catch (IOException e) {
                 Log.e(TAG, "ServerThread.run() error");
                 e.printStackTrace();

@@ -1,25 +1,30 @@
 package com.zperkowski.peersharing;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
     private RecyclerView recyclerView;
     private static ArrayList<Phone> phones = new ArrayList<>();
     private Client client;
+    private String manualAddress;
 
     public static void addPhoneToList(Phone phone) {
         phones.add(phone);
@@ -43,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                client = new Client("192.168.1.12", Server.getPort());
+                client = new Client(manualAddress, Server.getPort());
                 client.execute();
             }
         });
@@ -79,8 +84,38 @@ public class MainActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.manual_address) {
+            manualAddressDialog();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void manualAddressDialog() {
+        Log.d(TAG, "manualAddressDialog()");
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Input IP address");
+
+        final EditText input = new EditText(this);
+
+        input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+        builder.setView(input);
+
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                manualAddress = input.getText().toString();
+                Log.d(TAG, "manualAddressDialog got: " + manualAddress);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 }

@@ -4,4 +4,5 @@
     <string name="refreshed">List has been refreshed</string>
     <string name="downloading">Downloading…</string>
     <string name="downloaded">Downloaded</string>
+    <string name="manual_address">Maunal Address</string>
 </resources>

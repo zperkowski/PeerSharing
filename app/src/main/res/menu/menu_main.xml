@@ -3,6 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.zperkowski.peersharing.MainActivity">
     <item
+        android:id="@+id/manual_address"
+        android:orderInCategory="90"
+        android:title="@string/manual_address"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
         android:title="@string/action_settings"
