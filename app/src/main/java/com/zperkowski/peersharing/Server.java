@@ -1,22 +1,23 @@
 package com.zperkowski.peersharing;
 
-import android.app.Application;
 import android.util.Log;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Server {
     private static final String TAG = "Server";
     private static Server sServer;
     private ServerThread serverThread;
-    private ServerSocket serverSocket;
+    private DatagramSocket serverSocket;
     private String message;
     private final static int PORT = 6666;
+    byte[] recvBuf = new byte[15000];
 
     public static Server getServer() {
         Log.d(TAG, "getServer()");
@@ -48,27 +49,26 @@ public class Server {
         public void run() {
             try {
                 message = "";
-                serverSocket = new ServerSocket(PORT);
-                Socket socket = serverSocket.accept();
+                serverSocket = new DatagramSocket(PORT, InetAddress.getByName("192.168.1.0"));
+                serverSocket.setBroadcast(true);
+                DatagramPacket packet = new DatagramPacket(recvBuf, recvBuf.length);
+                Log.d(TAG, "Waiting for UDP broadcast");
+                serverSocket.receive(packet);
                 message += "Connection from "
-                        + socket.getInetAddress() + ":"
-                        + socket.getPort() + "\n";
+                        + serverSocket.getInetAddress() + ":"
+                        + serverSocket.getPort() + ": "
+                        + new String(packet.getData()).trim() + "\n";
                 Log.d(TAG, message);
-                MainActivity.addPhoneToList(new Phone(socket.getInetAddress()));
+                //MainActivity.addPhoneToList(new Phone(socket.getInetAddress()));
 
-                SocketServerReplyThread replyThread = new SocketServerReplyThread(socket);
-                replyThread.run();
+                //SocketServerReplyThread replyThread = new SocketServerReplyThread(socket);
+                //replyThread.run();
             } catch (IOException e) {
                 Log.e(TAG, "ServerThread.run() error");
                 e.printStackTrace();
             } finally {
                 if (serverSocket != null) {
-                    try {
-                        serverSocket.close();
-                    } catch (IOException e) {
-                        Log.e(TAG, "ServerThread try finally error");
-                        e.printStackTrace();
-                    }
+                    serverSocket.close();
                 }
             }
         }
