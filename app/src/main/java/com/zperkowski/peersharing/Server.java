@@ -16,6 +16,7 @@ public class Server {
     private ServerThread serverThread;
     private DatagramSocket serverSocket;
     private String message;
+    private String connectionIP;
     private final static int PORT = 6666;
     byte[] recvBuf = new byte[15000];
 
@@ -47,30 +48,31 @@ public class Server {
     private class ServerThread extends Thread {
         @Override
         public void run() {
-            try {
-                message = "";
-                serverSocket = new DatagramSocket(PORT, InetAddress.getByName("192.168.1.0"));
-                serverSocket.setBroadcast(true);
-                DatagramPacket packet = new DatagramPacket(recvBuf, recvBuf.length);
-                Log.d(TAG, "Waiting for UDP broadcast");
-                serverSocket.receive(packet);
-                message += "Connection from "
-                        + serverSocket.getInetAddress() + ":"
-                        + serverSocket.getPort() + ": "
-                        + new String(packet.getData()).trim() + "\n";
-                Log.d(TAG, message);
-                //MainActivity.addPhoneToList(new Phone(socket.getInetAddress()));
-
-                //SocketServerReplyThread replyThread = new SocketServerReplyThread(socket);
-                //replyThread.run();
-            } catch (IOException e) {
-                Log.e(TAG, "ServerThread.run() error");
-                e.printStackTrace();
-            } finally {
-                if (serverSocket != null) {
-                    serverSocket.close();
+            while (true)
+                try {
+                    message = "";
+                    serverSocket = new DatagramSocket(PORT, InetAddress.getByName("192.168.1.0"));
+                    serverSocket.setBroadcast(true);
+                    DatagramPacket packet = new DatagramPacket(recvBuf, recvBuf.length);
+                    Log.d(TAG, "Waiting for UDP broadcast");
+                    serverSocket.receive(packet);
+                    connectionIP = new String(packet.getData()).trim();
+                    if (!connectionIP.equals(NetworkUtils.getIPAddress(true))) {
+                        message += "Connection from " + connectionIP + "\n";
+                        Log.d(TAG, message);
+                        MainActivity.addPhoneToList(new Phone(connectionIP));
+//
+//                        SocketServerReplyThread replyThread = new SocketServerReplyThread(connectionIP);
+//                        replyThread.run();
+                    }
+                } catch (IOException e) {
+                    Log.e(TAG, "ServerThread.run() error");
+                    e.printStackTrace();
+                } finally {
+                    if (serverSocket != null) {
+                        serverSocket.close();
+                    }
                 }
-            }
         }
     }
 

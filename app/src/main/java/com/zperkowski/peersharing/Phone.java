@@ -1,6 +1,7 @@
 package com.zperkowski.peersharing;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Created by zperkowski on 22/01/2018.
@@ -12,6 +13,11 @@ public class Phone {
 
     public Phone(InetAddress address) {
         this.address = address;
+        this.name = "Name";
+    }
+
+    public Phone(String address) throws UnknownHostException {
+        this.address = InetAddress.getByName(address);
         this.name = "Name";
     }
 

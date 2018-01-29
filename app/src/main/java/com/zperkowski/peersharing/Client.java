@@ -44,22 +44,11 @@ public class Client extends AsyncTask<Void, Void, String> {
             //Open a random port to send the package
             DatagramSocket socket = new DatagramSocket();
             socket.setBroadcast(true);
-            byte[] sendData = TAG.getBytes();
+            Log.d(TAG, "Sending UDP: " + NetworkUtils.getIPAddress(true));
+            byte[] sendData = NetworkUtils.getIPAddress(true).getBytes();
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("192.168.1.0"), Server.getPort());
             socket.send(sendPacket);
             System.out.println(getClass().getName() + "Broadcast packet sent to: " + InetAddress.getByName("192.168.1.0").getHostAddress());
-
-			/*
-             * notice: inputStream.read() will block if no data return
-			 */
-            Log.d(TAG, "Listening...");
-//            while ((bytesRead = inputStream.read(buffer)) != -1) {
-//                Log.d(TAG, "Reading...");
-//                byteArrayOutputStream.write(buffer, 0, bytesRead);
-//                response += byteArrayOutputStream.toString("UTF-8");
-//            }
-            Log.d(TAG, "Read");
-
         } catch (UnknownHostException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -86,17 +75,4 @@ public class Client extends AsyncTask<Void, Void, String> {
         Log.d(TAG, result);
         super.onPostExecute(result);
     }
-
-
-//    InetAddress getBroadcastAddress() throws IOException {
-//        WifiManager wifi = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
-//        DhcpInfo dhcp = wifi.getDhcpInfo();
-//        // handle null somehow
-//
-//        int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
-//        byte[] quads = new byte[4];
-//        for (int k = 0; k < 4; k++)
-//            quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
-//        return InetAddress.getByAddress(quads);
-//    }
 }
