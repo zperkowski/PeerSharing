@@ -1,16 +1,49 @@
 package com.zperkowski.peersharing;
 
 import android.util.Log;
+import android.util.Pair;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class NetworkUtils {
     private static final String TAG = "NetworkUtils";
 
-    public static String getIPAddress(boolean useIPv4) {
+    public static String getNetworkAddress() {
+        List<Pair<String, String>> networkInfo = getNetworkInfo(true);
+        for (int i = 0; i < networkInfo.size(); i++) {
+            if (networkInfo.get(i).first.equals("Network"))
+                return networkInfo.get(i).second;
+        }
+        return "";
+    }
+
+    public static String getIPAddress() {
+        List<Pair<String, String>> networkInfo = getNetworkInfo(true);
+        for (int i = 0; i < networkInfo.size(); i++) {
+            if (networkInfo.get(i).first.equals("Address"))
+                return networkInfo.get(i).second;
+        }
+        return "";
+    }
+
+    public static String getBroadcastAddress() {
+        List<Pair<String, String>> networkInfo = getNetworkInfo(true);
+        for (int i = 0; i < networkInfo.size(); i++) {
+            if (networkInfo.get(i).first.equals("Broadcast"))
+                return networkInfo.get(i).second;
+        }
+        return "";
+    }
+
+    public static List<Pair<String, String>> getNetworkInfo(boolean useIPv4) {
+        List<Pair<String, String>> addresses = new ArrayList<>();
         try {
             List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface intf : interfaces) {
@@ -21,13 +54,18 @@ public class NetworkUtils {
                         boolean isIPv4 = sAddr.indexOf(':')<0;
                         if (useIPv4) {
                             if (isIPv4) {
-                                String bAddr = addr.getBroadcast().toString();
-                                //TODO: Return tuple or something that contains sAddr, bAddr and networkAddr
-                                return sAddr;
+                                sAddr = sAddr.split("/")[1];
+                                addresses.add(Pair.create("Network", getNetworkAddress(sAddr, addr.getNetworkPrefixLength())));
+                                addresses.add(Pair.create("Address", sAddr));
+                                addresses.add(Pair.create("Broadcast", addr.getBroadcast().toString()));
+                                return addresses;
                             }
                         } else {
                             int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
-                            return delim < 0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
+                            addresses.add(Pair.create("Network", ""));
+                            addresses.add(Pair.create("Address", delim < 0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase()));
+                            addresses.add(Pair.create("Broadcast", addr.getBroadcast().toString()));
+                            return addresses;
                         }
                     }
                 }
@@ -35,10 +73,29 @@ public class NetworkUtils {
         } catch (Exception ex) {
             Log.e(TAG, "Error");
         }
+        return addresses;
+    }
+
+    public static String getNetworkAddress(String ip, short mask) {
+        int value = 0xffffffff << (32 - mask);
+        byte[] maskAddr = new byte[]{
+                (byte)(value >>> 24), (byte)(value >> 16 & 0xff), (byte)(value >> 8 & 0xff), (byte)(value & 0xff) };
+
+        InetAddress netAddr = null;
+        try {
+            byte[] ipAddr = Inet4Address.getByName(ip).getAddress();
+            for (int i = 0; i < ipAddr.length; i++) {
+                ipAddr[i] = (byte) (ipAddr[i] & maskAddr[i]);
+            }
+            netAddr = InetAddress.getByAddress(ipAddr);
+            return netAddr.getHostAddress();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
         return "";
     }
 
-    public static String getIpAddress(byte[] rawBytes) {
+    public static String getIPAddress(byte[] rawBytes) {
         int i = 4;
         String ipAddress = "";
         for (byte raw : rawBytes)
@@ -52,16 +109,4 @@ public class NetworkUtils {
 
         return ipAddress;
     }
-
-//    public static InetAddress getBroadcastAddress() throws IOException {
-//        WifiManager wifi = (WifiManager) Context.getSystemService(Context.WIFI_SERVICE);
-//        DhcpInfo dhcp = wifi.getDhcpInfo();
-//        // handle null somehow
-//
-//        int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
-//        byte[] quads = new byte[4];
-//        for (int k = 0; k < 4; k++)
-//            quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
-//        return InetAddress.getByAddress(quads);
-//    }
 }

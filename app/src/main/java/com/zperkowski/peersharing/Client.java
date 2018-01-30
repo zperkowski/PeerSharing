@@ -44,11 +44,11 @@ public class Client extends AsyncTask<Void, Void, String> {
             //Open a random port to send the package
             DatagramSocket socket = new DatagramSocket();
             socket.setBroadcast(true);
-            Log.d(TAG, "Sending UDP: " + NetworkUtils.getIPAddress(true));
-            byte[] sendData = NetworkUtils.getIPAddress(true).getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName("192.168.1.0"), Server.getPort());
+            Log.d(TAG, "Sending UDP: " + NetworkUtils.getIPAddress());
+            byte[] sendData = NetworkUtils.getIPAddress().getBytes();
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(NetworkUtils.getNetworkAddress()), Server.getPort());
             socket.send(sendPacket);
-            System.out.println(getClass().getName() + "Broadcast packet sent to: " + InetAddress.getByName("192.168.1.0").getHostAddress());
+            Log.d(TAG, getClass().getName() + "Broadcast packet sent to: " + InetAddress.getByName(NetworkUtils.getNetworkAddress()));
         } catch (UnknownHostException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

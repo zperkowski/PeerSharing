@@ -51,13 +51,13 @@ public class Server {
             while (true)
                 try {
                     message = "";
-                    serverSocket = new DatagramSocket(PORT, InetAddress.getByName("192.168.1.0"));
+                    serverSocket = new DatagramSocket(PORT, InetAddress.getByName(NetworkUtils.getNetworkAddress()));
                     serverSocket.setBroadcast(true);
                     DatagramPacket packet = new DatagramPacket(recvBuf, recvBuf.length);
                     Log.d(TAG, "Waiting for UDP broadcast");
                     serverSocket.receive(packet);
                     connectionIP = new String(packet.getData()).trim();
-                    if (!connectionIP.equals(NetworkUtils.getIPAddress(true))) {
+                    if (!connectionIP.equals(NetworkUtils.getIPAddress())) {
                         message += "Connection from " + connectionIP + "\n";
                         Log.d(TAG, message);
                         MainActivity.addPhoneToList(new Phone(connectionIP));
