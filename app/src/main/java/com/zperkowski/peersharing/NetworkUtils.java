@@ -2,7 +2,7 @@ package com.zperkowski.peersharing;
 
 import android.util.Log;
 
-import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.List;
@@ -14,20 +14,20 @@ public class NetworkUtils {
         try {
             List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
             for (NetworkInterface intf : interfaces) {
-                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
-                for (InetAddress addr : addrs) {
-                    if (!addr.isLoopbackAddress()) {
-                        String sAddr = addr.getHostAddress();
+                List<InterfaceAddress> addrs = intf.getInterfaceAddresses();
+                for (InterfaceAddress addr : addrs) {
+                    if (!addr.getAddress().isLoopbackAddress()) {
+                        String sAddr = addr.getAddress().toString();
                         boolean isIPv4 = sAddr.indexOf(':')<0;
-
                         if (useIPv4) {
-                            if (isIPv4)
+                            if (isIPv4) {
+                                String bAddr = addr.getBroadcast().toString();
+                                //TODO: Return tuple or something that contains sAddr, bAddr and networkAddr
                                 return sAddr;
-                        } else {
-                            if (!isIPv4) {
-                                int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
-                                return delim < 0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
                             }
+                        } else {
+                            int delim = sAddr.indexOf('%'); // drop ip6 zone suffix
+                            return delim < 0 ? sAddr.toUpperCase() : sAddr.substring(0, delim).toUpperCase();
                         }
                     }
                 }
