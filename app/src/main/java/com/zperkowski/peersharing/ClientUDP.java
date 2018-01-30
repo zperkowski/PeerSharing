@@ -10,15 +10,15 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class Client extends AsyncTask<Void, Void, String> {
+public class ClientUDP extends AsyncTask<Void, Void, String> {
 
     private String dstAddress;
     private int dstPort;
     private String response = "";
-    final static private String TAG = "Client";
+    final static private String TAG = "ClientUDP";
     private Socket socket = null;
 
-    Client(String addr, int port) {
+    ClientUDP(String addr, int port) {
         dstAddress = addr;
         dstPort = port;
     }
@@ -26,10 +26,10 @@ public class Client extends AsyncTask<Void, Void, String> {
     @Override
     protected void onCancelled() {
         try {
-            Log.d(TAG, "Closing Client socket");
+            Log.d(TAG, "Closing ClientUDP socket");
             if (socket != null)
                 socket.close();
-            Log.d(TAG, "Closed Client socket");
+            Log.d(TAG, "Closed ClientUDP socket");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,7 +46,7 @@ public class Client extends AsyncTask<Void, Void, String> {
             socket.setBroadcast(true);
             Log.d(TAG, "Sending UDP: " + NetworkUtils.getIPAddress());
             byte[] sendData = NetworkUtils.getIPAddress().getBytes();
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(NetworkUtils.getNetworkAddress()), Server.getPort());
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(NetworkUtils.getNetworkAddress()), ServerUDP.getPort());
             socket.send(sendPacket);
             Log.d(TAG, getClass().getName() + "Broadcast packet sent to: " + InetAddress.getByName(NetworkUtils.getNetworkAddress()));
         } catch (UnknownHostException e) {

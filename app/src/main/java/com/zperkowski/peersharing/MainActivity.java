@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private RecyclerView recyclerView;
     private static ArrayList<Phone> phones = new ArrayList<>();
-    private Client client;
+    private ClientUDP clientUDP;
     private String manualAddress;
 
     public static void addPhoneToList(Phone phone) {
@@ -48,8 +48,8 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                client = new Client(manualAddress, Server.getPort());
-                client.execute();
+                clientUDP = new ClientUDP(manualAddress, ServerUDP.getPort());
+                clientUDP.execute();
             }
         });
 
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), NetworkService.class);
         intent.setAction(NetworkService.ACTION_STOPSERVER);
         startService(intent);
-        client.cancel(true);
+        clientUDP.cancel(true);
         super.onDestroy();
     }
 
@@ -107,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 manualAddress = input.getText().toString();
                 Log.d(TAG, "manualAddressDialog got: " + manualAddress);
+                ClientTCP clientTCP = new ClientTCP(manualAddress, ServerTCP.getPort());
+                clientTCP.execute();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

@@ -10,17 +10,6 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-
 public class NetworkService extends IntentService {
     static final private String TAG = "NetworkService";
     public static final String ACTION_DOWNLOAD = "com.zperkowski.peersharing.action.DOWNLOAD";
@@ -69,12 +58,36 @@ public class NetworkService extends IntentService {
 
     private void stopServer() {
         Log.d(TAG, "stopServer()");
-        Server.getServer().stopServer();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ServerUDP.getServer().stopServer();
+            }
+        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ServerTCP.getServer().stopServer();
+            }
+        }).start();
+        Log.d(TAG, "Servers stopped");
     }
 
     private void startServer() {
         Log.d(TAG, "startServer()");
-        Server.getServer().startServer();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ServerUDP.getServer().startServer();
+            }
+        }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ServerTCP.getServer().startServer();
+            }
+        }).start();
+        Log.d(TAG, "Servers started");
     }
 
     private void refresh() {
