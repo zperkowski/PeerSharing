@@ -15,7 +15,7 @@ import java.util.List;
 public class SimpleCardAdapter extends RecyclerView.Adapter<SimpleCardAdapter.CardViewHolder> {
     final static private String TAG = "SimpleCardAdapter";
 
-    private List<Phone> algorithms;
+    private static List<Phone> phoneList;
     private Context context;
 
     public static class CardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -47,10 +47,11 @@ public class SimpleCardAdapter extends RecyclerView.Adapter<SimpleCardAdapter.Ca
         }
     }
 
-    SimpleCardAdapter(List<Phone> algorithms, Context context) {
+    SimpleCardAdapter(List<Phone> phoneList, Context context) {
         Log.d(TAG, "SimpleCardAdapter()");
-        this.algorithms = algorithms;
+        this.phoneList = phoneList;
         this.context = context;
+
     }
 
     @Override
@@ -65,13 +66,13 @@ public class SimpleCardAdapter extends RecyclerView.Adapter<SimpleCardAdapter.Ca
     @Override
     public void onBindViewHolder(CardViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder()");
-        holder.name.setText(algorithms.get(position).getName());
-        holder.ip.setText(algorithms.get(position).getAddress().toString());
+        holder.name.setText(phoneList.get(position).getName());
+        holder.ip.setText(phoneList.get(position).getAddress().toString());
     }
 
     @Override
     public int getItemCount() {
         //Log.d(TAG, "getItemCount()");
-        return algorithms.size();
+        return phoneList.size();
     }
 }

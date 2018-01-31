@@ -1,5 +1,6 @@
 package com.zperkowski.peersharing;
 
+import android.app.Application;
 import android.util.Log;
 
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class ServerUDP {
                     serverSocket = new DatagramSocket(PORT, InetAddress.getByName(NetworkUtils.getNetworkAddress()));
                     serverSocket.setBroadcast(true);
                     DatagramPacket packet = new DatagramPacket(recvBuf, recvBuf.length);
-                    Log.d(TAG, "Waiting for UDP broadcast");
+                    Log.d(TAG, "Waiting for UDP broadcast: " + InetAddress.getByName(NetworkUtils.getNetworkAddress()) + " " + PORT);
                     serverSocket.receive(packet);
                     connectionIP = new String(packet.getData()).trim();
                     if (!connectionIP.equals(NetworkUtils.getIPAddress())) {

@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private String manualAddress;
 
     public static void addPhoneToList(Phone phone) {
+        Log.d(TAG, "New phone: " + phone.getAddress());
         phones.add(phone);
     }
 
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 clientUDP = new ClientUDP(manualAddress, ServerUDP.getPort());
                 clientUDP.execute();
+                recyclerView.getAdapter().notifyDataSetChanged();
             }
         });
 
