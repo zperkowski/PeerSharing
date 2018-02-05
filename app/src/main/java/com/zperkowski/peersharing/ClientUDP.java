@@ -12,16 +12,10 @@ import java.net.UnknownHostException;
 
 public class ClientUDP extends AsyncTask<Void, Void, String> {
 
-    private String dstAddress;
-    private int dstPort;
     private String response = "";
     final static private String TAG = "ClientUDP";
     private Socket socket = null;
 
-    ClientUDP(String addr, int port) {
-        dstAddress = addr;
-        dstPort = port;
-    }
 
     @Override
     protected void onCancelled() {

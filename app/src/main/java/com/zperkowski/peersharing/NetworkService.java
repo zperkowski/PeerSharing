@@ -18,12 +18,13 @@ public class NetworkService extends IntentService {
     public static final String ACTION_STARTSERVER = "com.zperkowski.peersharing.action.STARTSERVER";
     public static final String ACTION_STOPSERVER = "com.zperkowski.peersharing.action.STOPSERVER";
 
-    public static final String EXTRA_IP = "com.zperkowski.peersharing.extra.PARAM1";
-    public static final String EXTRA_PATH = "com.zperkowski.peersharing.extra.PARAM2";
+    public static final String EXTRA_IP = "com.zperkowski.peersharing.extra.EXTRA_IP";
+    public static final String EXTRA_PATH = "com.zperkowski.peersharing.extra.EXTRA_PATH";
 
     public static final int NOTIFICATION_DOWNLOAD = 100;
 
     private Handler handler;
+    private ClientUDP clientUDP;
 
     public NetworkService() {
         super("NetworkService");
@@ -44,8 +45,8 @@ public class NetworkService extends IntentService {
                 final String param2 = intent.getStringExtra(EXTRA_PATH);
                 downloadFile(param1, param2);
             } else if (ACTION_GETFILES.equals(action)) {
-                final String ipParam = intent.getStringExtra(EXTRA_IP);
-                getFiles(ipParam);
+                final String manualAddress = intent.getStringExtra(EXTRA_IP);
+                getFiles(manualAddress);
             } else if (ACTION_REFRESH.equals(action)) {
                 refresh();
             } else if (ACTION_STARTSERVER.equals(action)) {
@@ -70,6 +71,7 @@ public class NetworkService extends IntentService {
                 ServerTCP.getServer().stopServer();
             }
         }).start();
+        clientUDP.cancel(true);
         Log.d(TAG, "Servers stopped");
     }
 
@@ -92,6 +94,8 @@ public class NetworkService extends IntentService {
 
     private void refresh() {
         Log.d(TAG, "refresh()");
+        clientUDP = new ClientUDP();
+        clientUDP.execute();
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -100,8 +104,10 @@ public class NetworkService extends IntentService {
         });
     }
 
-    private void getFiles(String ip) {
-        Log.d(TAG, "getFiles(" + ip + ")");
+    private void getFiles(String manualAddress) {
+        Log.d(TAG, "getFiles(" + manualAddress + ")");
+        ClientTCP clientTCP = new ClientTCP(manualAddress, ServerTCP.getPort());
+        clientTCP.execute();
     }
 
     private void downloadFile(String ip, String path) {

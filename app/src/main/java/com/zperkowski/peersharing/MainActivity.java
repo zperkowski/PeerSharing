@@ -23,7 +23,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
     private RecyclerView recyclerView;
     private static ArrayList<Phone> phones = new ArrayList<>();
-    private ClientUDP clientUDP;
+    private Intent intent;
+
     private String manualAddress;
 
     public static void addPhoneToList(Phone phone) {
@@ -37,20 +38,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        intent = new Intent(getApplicationContext(), NetworkService.class);
 
         recyclerView = (RecyclerView) findViewById(R.id.phone_list);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new SimpleCardAdapter(phones, getApplicationContext()));
 
-        final Intent intent = new Intent(getApplicationContext(), NetworkService.class);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clientUDP = new ClientUDP(manualAddress, ServerUDP.getPort());
-                clientUDP.execute();
+                intent.setAction(NetworkService.ACTION_REFRESH);
+                startService(intent);
                 recyclerView.getAdapter().notifyDataSetChanged();
             }
         });
@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(getApplicationContext(), NetworkService.class);
         intent.setAction(NetworkService.ACTION_STOPSERVER);
         startService(intent);
-        clientUDP.cancel(true);
         super.onDestroy();
     }
 
@@ -109,8 +108,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 manualAddress = input.getText().toString();
                 Log.d(TAG, "manualAddressDialog got: " + manualAddress);
-                ClientTCP clientTCP = new ClientTCP(manualAddress, ServerTCP.getPort());
-                clientTCP.execute();
+                intent.setAction(NetworkService.ACTION_GETFILES);
+                intent.putExtra(NetworkService.EXTRA_IP, manualAddress);
+                startService(intent);
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
