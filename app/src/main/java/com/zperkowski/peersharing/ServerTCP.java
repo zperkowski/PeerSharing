@@ -2,7 +2,9 @@ package com.zperkowski.peersharing;
 
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
@@ -49,14 +51,24 @@ public class ServerTCP {
                     message = "";
                     serverSocket = new ServerSocket(PORT);
                     Socket socket = serverSocket.accept();
-                    message += "Connection from "
+                    Log.d(TAG, "Connection from "
                             + socket.getInetAddress() + ":"
-                            + socket.getPort() + "\n";
-                    Log.d(TAG, message);
-                    MainActivity.addPhoneToList(new Phone(socket.getInetAddress()));
+                            + socket.getPort() + "\n");
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    InputStream inputStream = socket.getInputStream();
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
 
-                    SocketServerReplyThread replyThread = new SocketServerReplyThread(socket);
-                    replyThread.run();
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        Log.d(TAG, "Reading...");
+                        byteArrayOutputStream.write(buffer, 0, bytesRead);
+                        message += byteArrayOutputStream.toString("UTF-8");
+                    }
+                    // No information - add IP to the list
+                    if (message.length() == 0) {
+                        if (!socket.getInetAddress().equals(NetworkUtils.getIPAddress()))
+                            MainActivity.addPhoneToList(new Phone(socket.getInetAddress()));
+                    }
                 } catch (IOException e) {
                     Log.e(TAG, "ServerThread.run() error");
                     e.printStackTrace();

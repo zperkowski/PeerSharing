@@ -12,7 +12,7 @@ public class ServerUDP {
     private static ServerUDP sServerUDP;
     private ServerThread serverThread;
     private DatagramSocket serverSocket;
-    private String connectionIP;
+    private String data, connectionIP;
     private final static int PORT = 6666;
     byte[] recvBuf = new byte[15000];
 
@@ -51,15 +51,15 @@ public class ServerUDP {
                     DatagramPacket packet = new DatagramPacket(recvBuf, recvBuf.length);
                     Log.d(TAG, "Waiting for UDP broadcast: " + InetAddress.getByName(NetworkUtils.getNetworkAddress()) + " " + PORT);
                     serverSocket.receive(packet);
-                    connectionIP = new String(packet.getData()).trim();
+                    data = new String(packet.getData()).trim();
+                    connectionIP = packet.getAddress().toString().substring(1);
                     // If connection address is diffrent than its own
                     if (!connectionIP.equals(NetworkUtils.getIPAddress())) {
                         Log.d(TAG, "Connection from " + connectionIP + ":" + serverSocket.getPort() + "\n");
-                        // Adds new IP to the list of known addresses
                         MainActivity.addPhoneToList(new Phone(connectionIP));
                         // Creates new TCP client to answer
-                        ClientTCP clientTCP = new ClientTCP(connectionIP, ServerTCP.getPort());
-                        clientTCP.execute();
+                        ClientTCP clientTCP = new ClientTCP();
+                        clientTCP.execute(connectionIP);
                     }
                 } catch (IOException e) {
                     Log.e(TAG, "ServerThread.run() error");

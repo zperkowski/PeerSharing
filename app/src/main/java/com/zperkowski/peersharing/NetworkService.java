@@ -107,8 +107,8 @@ public class NetworkService extends IntentService {
 
     private void getFiles(String manualAddress) {
         Log.d(TAG, "getFiles(" + manualAddress + ")");
-        ClientTCP clientTCP = new ClientTCP(manualAddress, ServerTCP.getPort());
-        clientTCP.execute();
+        ClientTCP clientTCP = new ClientTCP();
+        clientTCP.execute(manualAddress);
     }
 
     private void downloadFile(String ip, String path) {

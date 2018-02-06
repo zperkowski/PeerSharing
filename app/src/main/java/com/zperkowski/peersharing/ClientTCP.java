@@ -3,25 +3,16 @@ package com.zperkowski.peersharing;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-public class ClientTCP extends AsyncTask<Void, Void, String> {
-
-    private String dstAddress;
-    private int dstPort;
+public class ClientTCP extends AsyncTask<String, Void, String> {
     private String response = "";
     final static private String TAG = "ClientTCP";
     private Socket socket = null;
-
-    ClientTCP(String addr, int port) {
-        dstAddress = addr;
-        dstPort = port;
-    }
 
     @Override
     protected void onCancelled() {
@@ -37,45 +28,10 @@ public class ClientTCP extends AsyncTask<Void, Void, String> {
     }
 
     @Override
-    protected String doInBackground(Void... arg0) {
-        try {
-            Log.d(TAG, "Running...");
-            socket = new Socket(dstAddress, dstPort);
-
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
-            byte[] buffer = new byte[1024];
-
-            int bytesRead;
-            InputStream inputStream = socket.getInputStream();
-            OutputStream outputStream = socket.getOutputStream();
-
-            Log.d(TAG, "Listening...");
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                Log.d(TAG, "Reading...");
-                byteArrayOutputStream.write(buffer, 0, bytesRead);
-                response += byteArrayOutputStream.toString("UTF-8");
-            }
-            Log.d(TAG, "Read");
-
-        } catch (UnknownHostException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            response = "UnknownHostException: " + e.toString();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            response = "IOException: " + e.toString();
-        } finally {
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-            }
-        }
-        return response;
+    protected String doInBackground(String... arg0) {
+        if (arg0.length == 1)
+            return sendUnicast(arg0[0], ServerTCP.getPort());
+        return null;
     }
 
     @Override
@@ -83,5 +39,31 @@ public class ClientTCP extends AsyncTask<Void, Void, String> {
         Log.d(TAG, result);
         super.onPostExecute(result);
     }
+    private String sendUnicast(String address, int port) {
+        try {
+            Log.d(TAG, "sendUnicast(" + address + "," + port +")");
+            socket = new Socket(address, port);
 
+            OutputStream outputStream = socket.getOutputStream();
+            PrintStream printStream = new PrintStream(outputStream);
+            printStream.print("");
+            printStream.close();
+
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            response = "UnknownHostException: " + e.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            response = "IOException: " + e.toString();
+        } finally {
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return response;
+    }
 }
