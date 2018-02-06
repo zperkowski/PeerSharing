@@ -28,8 +28,18 @@ public class MainActivity extends AppCompatActivity {
     private String manualAddress;
 
     public static void addPhoneToList(Phone phone) {
-        Log.d(TAG, "New phone: " + phone.getAddress());
-        phones.add(phone);
+        boolean exists = false;
+        for (Phone p:
+             phones) {
+            if (p.getAddress().equals(phone.getAddress())) {
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) {
+            Log.d(TAG, "New phone: " + phone.getAddress());
+            phones.add(phone);
+        }
     }
 
     @Override
