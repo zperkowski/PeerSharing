@@ -44,31 +44,32 @@ public class ServerTCP {
     private class ServerThread extends Thread {
         @Override
         public void run() {
-            try {
-                message = "";
-                serverSocket = new ServerSocket(PORT);
-                Socket socket = serverSocket.accept();
-                message += "Connection from "
-                        + socket.getInetAddress() + ":"
-                        + socket.getPort() + "\n";
-                Log.d(TAG, message);
-                MainActivity.addPhoneToList(new Phone(socket.getInetAddress()));
+            while (true)
+                try {
+                    message = "";
+                    serverSocket = new ServerSocket(PORT);
+                    Socket socket = serverSocket.accept();
+                    message += "Connection from "
+                            + socket.getInetAddress() + ":"
+                            + socket.getPort() + "\n";
+                    Log.d(TAG, message);
+                    MainActivity.addPhoneToList(new Phone(socket.getInetAddress()));
 
-                SocketServerReplyThread replyThread = new SocketServerReplyThread(socket);
-                replyThread.run();
-            } catch (IOException e) {
-                Log.e(TAG, "ServerThread.run() error");
-                e.printStackTrace();
-            } finally {
-                if (serverSocket != null) {
-                    try {
-                        serverSocket.close();
-                    } catch (IOException e) {
-                        Log.e(TAG, "ServerThread try finally error");
-                        e.printStackTrace();
+                    SocketServerReplyThread replyThread = new SocketServerReplyThread(socket);
+                    replyThread.run();
+                } catch (IOException e) {
+                    Log.e(TAG, "ServerThread.run() error");
+                    e.printStackTrace();
+                } finally {
+                    if (serverSocket != null) {
+                        try {
+                            serverSocket.close();
+                        } catch (IOException e) {
+                            Log.e(TAG, "ServerThread try finally error");
+                            e.printStackTrace();
+                        }
                     }
                 }
-            }
         }
     }
 

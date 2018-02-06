@@ -1,22 +1,17 @@
 package com.zperkowski.peersharing;
 
-import android.app.Application;
 import android.util.Log;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.Socket;
 
 public class ServerUDP {
     private static final String TAG = "ServerUDP";
     private static ServerUDP sServerUDP;
     private ServerThread serverThread;
     private DatagramSocket serverSocket;
-    private String message;
     private String connectionIP;
     private final static int PORT = 6666;
     byte[] recvBuf = new byte[15000];
@@ -51,20 +46,20 @@ public class ServerUDP {
         public void run() {
             while (true)
                 try {
-                    message = "";
                     serverSocket = new DatagramSocket(PORT, InetAddress.getByName(NetworkUtils.getNetworkAddress()));
                     serverSocket.setBroadcast(true);
                     DatagramPacket packet = new DatagramPacket(recvBuf, recvBuf.length);
                     Log.d(TAG, "Waiting for UDP broadcast: " + InetAddress.getByName(NetworkUtils.getNetworkAddress()) + " " + PORT);
                     serverSocket.receive(packet);
                     connectionIP = new String(packet.getData()).trim();
+                    // If connection address is diffrent than its own
                     if (!connectionIP.equals(NetworkUtils.getIPAddress())) {
-                        message += "Connection from " + connectionIP + "\n";
-                        Log.d(TAG, message);
+                        Log.d(TAG, "Connection from " + connectionIP + ":" + serverSocket.getPort() + "\n");
+                        // Adds new IP to the list of known addresses
                         MainActivity.addPhoneToList(new Phone(connectionIP));
-//
-//                        SocketServerReplyThread replyThread = new SocketServerReplyThread(connectionIP);
-//                        replyThread.run();
+                        // Creates new TCP client to answer
+                        ClientTCP clientTCP = new ClientTCP(connectionIP, ServerTCP.getPort());
+                        clientTCP.execute();
                     }
                 } catch (IOException e) {
                     Log.e(TAG, "ServerThread.run() error");
@@ -76,36 +71,4 @@ public class ServerUDP {
                 }
         }
     }
-
-    private class SocketServerReplyThread extends Thread {
-
-        private Socket hostThreadSocket;
-
-        SocketServerReplyThread(Socket socket) {
-            hostThreadSocket = socket;
-        }
-
-        @Override
-        public void run() {
-            OutputStream outputStream;
-            String msgReply = "Hello from ServerUDP, you are connected";
-
-            try {
-                outputStream = hostThreadSocket.getOutputStream();
-                PrintStream printStream = new PrintStream(outputStream);
-                printStream.print(msgReply);
-                printStream.close();
-
-                message += "replayed: " + msgReply + "\n";
-                Log.d(TAG, message);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                message += "Something wrong! " + e.toString() + "\n";
-            }
-            Log.d(TAG, message);
-        }
-
-    }
-
 }

@@ -6,6 +6,7 @@ import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -41,12 +42,12 @@ public class ClientTCP extends AsyncTask<Void, Void, String> {
             Log.d(TAG, "Running...");
             socket = new Socket(dstAddress, dstPort);
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(
-                    1024);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
             byte[] buffer = new byte[1024];
 
             int bytesRead;
             InputStream inputStream = socket.getInputStream();
+            OutputStream outputStream = socket.getOutputStream();
 
             Log.d(TAG, "Listening...");
             while ((bytesRead = inputStream.read(buffer)) != -1) {

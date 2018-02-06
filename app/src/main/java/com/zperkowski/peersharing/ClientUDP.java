@@ -38,11 +38,11 @@ public class ClientUDP extends AsyncTask<Void, Void, String> {
             //Open a random port to send the package
             DatagramSocket socket = new DatagramSocket();
             socket.setBroadcast(true);
-            Log.d(TAG, "Sending UDP: " + NetworkUtils.getIPAddress());
+            Log.d(TAG, "Sending UDP: " + NetworkUtils.getIPAddress() + ":" + socket.getPort());
             byte[] sendData = NetworkUtils.getIPAddress().getBytes();
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, InetAddress.getByName(NetworkUtils.getNetworkAddress()), ServerUDP.getPort());
             socket.send(sendPacket);
-            Log.d(TAG, getClass().getName() + "Broadcast packet sent to: " + InetAddress.getByName(NetworkUtils.getNetworkAddress()));
+            Log.d(TAG, getClass().getName() + "Broadcast packet sent to: " + InetAddress.getByName(NetworkUtils.getNetworkAddress()) + ":" + socket.getPort());
         } catch (UnknownHostException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

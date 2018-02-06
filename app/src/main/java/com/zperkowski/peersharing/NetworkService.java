@@ -71,7 +71,8 @@ public class NetworkService extends IntentService {
                 ServerTCP.getServer().stopServer();
             }
         }).start();
-        clientUDP.cancel(true);
+        if (clientUDP != null)
+            clientUDP.cancel(true);
         Log.d(TAG, "Servers stopped");
     }
 
