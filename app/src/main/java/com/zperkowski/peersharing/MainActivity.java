@@ -3,6 +3,7 @@ package com.zperkowski.peersharing;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +21,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -112,32 +115,33 @@ public class MainActivity extends AppCompatActivity {
 
     private void manualAddressDialog() {
         Log.d(TAG, "manualAddressDialog()");
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Input IP address");
+        LayoutInflater layoutInflater = LayoutInflater.from(MainActivity.this);
+        View promptView = layoutInflater.inflate(R.layout.dialog_ip, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+        alertDialogBuilder.setView(promptView);
 
-        final EditText input = new EditText(this);
-
-        input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-        builder.setView(input);
-
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                manualAddress = input.getText().toString();
-                Log.d(TAG, "manualAddressDialog got: " + manualAddress);
-                intent.setAction(NetworkService.ACTION_GETFILES);
-                intent.putExtra(NetworkService.EXTRA_IP, manualAddress);
-                startService(intent);
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
+        final EditText input = (EditText) promptView.findViewById(R.id.texedit_manual_ip);
+        // setup a dialog window
+        alertDialogBuilder.setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        manualAddress = input.getText().toString();
+                        Log.d(TAG, "manualAddressDialog got: " + manualAddress);
+                        if (Pattern.matches("(([2]([0-4][0-9]|[5][0-5])|[0-1]?[0-9]?[0-9])[.]){3}(([2]([0-4][0-9]|[5][0-5])|[0-1]?[0-9]?[0-9]))", manualAddress)) {
+                            intent.setAction(NetworkService.ACTION_GETFILES);
+                            intent.putExtra(NetworkService.EXTRA_IP, manualAddress);
+                            startService(intent);
+                        } else
+                            Toast.makeText(MainActivity.this, R.string.wrong_address, Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
     }
 }

@@ -5,4 +5,6 @@
     <string name="downloading">Downloading…</string>
     <string name="downloaded">Downloaded</string>
     <string name="manual_address">Maunal Address</string>
+    <string name="input_ip_address">"Input IP address"</string>
+    <string name="wrong_address">Wrong address</string>
 </resources>
