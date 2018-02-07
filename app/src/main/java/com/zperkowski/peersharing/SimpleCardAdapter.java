@@ -42,7 +42,7 @@ public class SimpleCardAdapter extends RecyclerView.Adapter<SimpleCardAdapter.Ca
             Log.d(TAG, "onClick() " + String.valueOf(ip.getText()));
             Intent intent = new Intent(itemView.getContext(), NetworkService.class);
             intent.setAction(NetworkService.ACTION_GETFILES);
-            intent.putExtra(NetworkService.EXTRA_IP, ip.getText());
+            intent.putExtra(NetworkService.EXTRA_IP, ip.getText().toString().substring(1));
             context.startService(intent);
         }
     }

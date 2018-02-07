@@ -68,7 +68,13 @@ public class ServerTCP {
                     if (message.length() == 0) {
                         if (!socket.getInetAddress().equals(NetworkUtils.getIPAddress()))
                             MainActivity.addPhoneToList(new Phone(socket.getInetAddress()));
-                    }
+                    } else
+                        switch (message) {
+                            case NetworkService.ACTION_GETFILES:
+                                FileUtils.getFilesList();
+                                break;
+                        }
+
                 } catch (IOException e) {
                     Log.e(TAG, "ServerThread.run() error");
                     e.printStackTrace();
