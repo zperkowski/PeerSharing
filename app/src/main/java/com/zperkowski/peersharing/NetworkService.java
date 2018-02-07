@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.Toast;
 
 public class NetworkService extends IntentService {
     static final private String TAG = "NetworkService";
@@ -97,12 +96,6 @@ public class NetworkService extends IntentService {
         Log.d(TAG, "refresh()");
         clientUDP = new ClientUDP();
         clientUDP.execute();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), R.string.refreshed, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 
     private void getFiles(String manualAddress) {

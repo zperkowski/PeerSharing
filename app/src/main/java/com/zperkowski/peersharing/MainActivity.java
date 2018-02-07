@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -61,7 +63,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 intent.setAction(NetworkService.ACTION_REFRESH);
                 startService(intent);
-                recyclerView.getAdapter().notifyDataSetChanged();
+                new Handler().postDelayed(new Runnable() {
+                    public void run() {
+                        recyclerView.getAdapter().notifyDataSetChanged();
+                        Toast.makeText(getApplicationContext(), R.string.refreshed, Toast.LENGTH_SHORT).show();
+                    }
+                }, 500);
+
             }
         });
 
