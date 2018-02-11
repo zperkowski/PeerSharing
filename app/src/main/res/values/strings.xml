@@ -7,4 +7,55 @@
     <string name="manual_address">Maunal Address</string>
     <string name="input_ip_address">"Input IP address"</string>
     <string name="wrong_address">Wrong address</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_display_name">Phone name</string>
+    <string name="pref_default_display_name">Default</string>
+
+    <string name="pref_title_language">Language</string>
+    <string-array name="pref_language_list_titles">
+        <item>English</item>
+    </string-array>
+    <string-array name="pref_language_list_values">
+        <item>english</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_networking">Networking</string>
+
+    <string name="pref_title_sync_frequency">Refresh frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string-array name="list_preference_entries">
+        <item>Entry 1</item>
+        <item>Entry 2</item>
+        <item>Entry 3</item>
+    </string-array>
+
+    <string-array name="list_preference_entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
 </resources>
