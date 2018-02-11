@@ -10,12 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.io.File;
 import java.util.List;
 
 public class SimpleCardAdapter extends RecyclerView.Adapter<SimpleCardAdapter.CardViewHolder> {
     final static private String TAG = "SimpleCardAdapter";
 
     private static List<Phone> phoneList;
+    private static List<File> fileList;
     private Context context;
 
     public static class CardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -44,14 +46,16 @@ public class SimpleCardAdapter extends RecyclerView.Adapter<SimpleCardAdapter.Ca
             intent.setAction(NetworkService.ACTION_GETFILES);
             intent.putExtra(NetworkService.EXTRA_IP, ip.getText().toString().substring(1));
             context.startService(intent);
+            intent = new Intent(itemView.getContext(), FilesActivity.class);
+            intent.putExtra("name", ip.getText().toString().substring(1));
+            context.startActivity(intent);
         }
     }
 
     SimpleCardAdapter(List<Phone> phoneList, Context context) {
-        Log.d(TAG, "SimpleCardAdapter()");
+        Log.d(TAG, "SimpleCardAdapter(phoneList)");
         this.phoneList = phoneList;
         this.context = context;
-
     }
 
     @Override
