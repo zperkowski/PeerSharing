@@ -102,10 +102,11 @@ public class NetworkService extends IntentService {
         Log.d(TAG, "getFiles(" + manualAddress + ")");
         ClientTCP clientTCP = new ClientTCP();
         clientTCP.execute(manualAddress, ACTION_GETFILES);
+        // TODO: Add 2nd parameter to execute above to send path. If not set should send just / (root directory)
     }
 
     private void downloadFile(String ip, String path) {
-        Log.d(TAG, "ip: " + ip + " path: " + path);
+        Log.d(TAG, "fileSize: " + ip + " path: " + path);
 
         Notification notificationDownloading = new Notification.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)

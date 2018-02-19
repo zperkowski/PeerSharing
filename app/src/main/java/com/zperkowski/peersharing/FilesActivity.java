@@ -21,11 +21,14 @@ public class FilesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_files);
         intent = getIntent();
-        getSupportActionBar().setTitle(intent.getStringExtra("name"));
+        getSupportActionBar().setTitle(intent.getStringExtra("deviceIP"));
 
-//        recyclerView = findViewById(R.id.files_list);
-//        recyclerView.setHasFixedSize(true);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-//        recyclerView.setAdapter(new SimpleCardAdapter(filesList, getApplicationContext()));
+        filesList = new ArrayList<>();
+        filesList.add(new File("/"));
+
+        recyclerView = findViewById(R.id.files_list);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(new FilesCardAdapter(intent.getStringExtra("deviceIP"), filesList, getApplicationContext()));
     }
 }

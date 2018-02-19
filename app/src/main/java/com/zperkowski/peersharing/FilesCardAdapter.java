@@ -13,48 +13,50 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.List;
 
-public class SimpleCardAdapter extends RecyclerView.Adapter<SimpleCardAdapter.CardViewHolder> {
-    final static private String TAG = "SimpleCardAdapter";
+public class FilesCardAdapter extends RecyclerView.Adapter<FilesCardAdapter.CardViewHolder> {
+    final static private String TAG = "FilesCardAdapter";
 
-    private static List<Phone> phoneList;
     private static List<File> fileList;
     private Context context;
+    private static String deviceIp;
 
     public static class CardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        final static private String TAG = "CardViewHolder";
+        final static private String TAG = "FilesCA.CardViewHolder";
 
         Context context;
 
         CardView cardView;
-        TextView name;
-        TextView ip;
+        TextView fileName;
+        TextView fileSize;
+        TextView filePath;
 
         public CardViewHolder(View itemView, Context context) {
             super(itemView);
             Log.d(TAG, "CardViewHolder()");
             itemView.setOnClickListener(this);
             this.context = context;
-            cardView = itemView.findViewById(R.id.cv);
-            name = itemView.findViewById(R.id.row_name);
-            ip = itemView.findViewById(R.id.row_ip);
+            cardView = itemView.findViewById(R.id.files_card_view);
+            fileName = itemView.findViewById(R.id.row_file_name);
+            fileSize = itemView.findViewById(R.id.row_file_size);
+            filePath = itemView.findViewById(R.id.row_file_path);
         }
 
         @Override
         public void onClick(View view) {
-            Log.d(TAG, "onClick() " + String.valueOf(ip.getText()));
+            Log.d(TAG, "onClick() " + String.valueOf(fileName.toString()));
             Intent intent = new Intent(itemView.getContext(), NetworkService.class);
             intent.setAction(NetworkService.ACTION_GETFILES);
-            intent.putExtra(NetworkService.EXTRA_IP, ip.getText().toString().substring(1));
+            intent.putExtra(NetworkService.EXTRA_IP, deviceIp);
+            intent.putExtra(NetworkService.EXTRA_PATH, filePath.getText());
             context.startService(intent);
-            intent = new Intent(itemView.getContext(), FilesActivity.class);
-            intent.putExtra("name", ip.getText().toString().substring(1));
-            context.startActivity(intent);
+            // TODO: Wait for the respond and reload the CardViewHolder
         }
     }
 
-    SimpleCardAdapter(List<Phone> phoneList, Context context) {
-        Log.d(TAG, "SimpleCardAdapter(phoneList)");
-        this.phoneList = phoneList;
+    FilesCardAdapter(String ip, List<File> filesList, Context context) {
+        Log.d(TAG, "FilesCardAdapter(filesList)");
+        this.deviceIp = ip;
+        this.fileList = filesList;
         this.context = context;
     }
 
@@ -63,20 +65,23 @@ public class SimpleCardAdapter extends RecyclerView.Adapter<SimpleCardAdapter.Ca
         Log.d(TAG, "onCreateViewHolder()");
         // create a new view
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.row_card_item, parent, false);
+        View view = inflater.inflate(R.layout.file_card_item, parent, false);
         return new CardViewHolder(view, context);
     }
 
     @Override
     public void onBindViewHolder(CardViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder()");
-        holder.name.setText(phoneList.get(position).getName());
-        holder.ip.setText(phoneList.get(position).getAddress().toString());
+        holder.fileName.setText(fileList.get(position).getName());
+        holder.filePath.setText(fileList.get(position).getPath());
+        double fileSize = fileList.get(position).length();
+        while (fileSize > 1024.0)
+            fileSize /= 1024;
+        holder.fileSize.setText(String.valueOf(fileSize));
     }
 
     @Override
     public int getItemCount() {
-        //Log.d(TAG, "getItemCount()");
-        return phoneList.size();
+        return fileList.size();
     }
 }
