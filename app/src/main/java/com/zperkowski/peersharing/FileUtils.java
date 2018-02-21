@@ -10,17 +10,21 @@ import java.util.List;
 public class FileUtils {
     private static final String TAG = "FileUtils";
 
-    public static List<File> getFilesList() {
-        String path = Environment.getRootDirectory().getPath();
-        Log.d(TAG, "Path: " + path);
-        File[] files = new File(path).listFiles();
-        String list = "[ ";
+    public static List<String> getFilesList() {
+        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
+        File downloadFolder = new File(path);
+        Log.d(TAG, "Path: " + path + " Read: " + downloadFolder.canRead() + " Write: " + downloadFolder.canWrite());
+        File[] files = downloadFolder.listFiles();
+        StringBuilder list = new StringBuilder();
+        list.append("[ ");
         for (File f : files) {
             if (f.isFile())
-                list += f.getName() + " ";
+                list.append(f.getName() + " ");
+            else
+                list.append(f.getName() + "/ ");
         }
-        list += "]";
+        list.append("]");
         Log.d(TAG, "getFilesList: " + list);
-        return Arrays.asList(files);
+        return Arrays.asList(list.toString());
     }
 }

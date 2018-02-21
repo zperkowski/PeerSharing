@@ -1,11 +1,14 @@
 package com.zperkowski.peersharing;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private Intent intent;
 
     private String manualAddress;
+
+    private static final int PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 0;
+    private static final int PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
     public static void addPhoneToList(Phone phone) {
         boolean exists = false;
@@ -73,6 +79,12 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE);
+        }
 
 
         intent.setAction(NetworkService.ACTION_STARTSERVER);

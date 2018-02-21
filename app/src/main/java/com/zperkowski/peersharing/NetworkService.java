@@ -103,6 +103,7 @@ public class NetworkService extends IntentService {
         ClientTCP clientTCP = new ClientTCP();
         clientTCP.execute(manualAddress, ACTION_GETFILES);
         // TODO: Add 2nd parameter to execute above to send path. If not set should send just / (root directory)
+
     }
 
     private void downloadFile(String ip, String path) {
