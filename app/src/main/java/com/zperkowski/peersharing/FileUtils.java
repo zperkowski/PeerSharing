@@ -4,13 +4,11 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 
 public class FileUtils {
     private static final String TAG = "FileUtils";
 
-    public static List<String> getFilesList() {
+    public static String getFilesList() {
         String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
         File downloadFolder = new File(path);
         Log.d(TAG, "Path: " + path + " Read: " + downloadFolder.canRead() + " Write: " + downloadFolder.canWrite());
@@ -25,6 +23,6 @@ public class FileUtils {
         }
         list.append("]");
         Log.d(TAG, "getFilesList: " + list);
-        return Arrays.asList(list.toString());
+        return list.toString();
     }
 }

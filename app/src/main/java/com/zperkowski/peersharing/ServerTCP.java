@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 
 public class ServerTCP {
     private static final String TAG = "ServerTCP";
@@ -60,20 +61,30 @@ public class ServerTCP {
                     ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
 
                     while ((bytesRead = inputStream.read(buffer)) != -1) {
-                        Log.d(TAG, "Reading...");
+                        Log.d(TAG, "Reading... bytesRead: " + bytesRead);
                         byteArrayOutputStream.write(buffer, 0, bytesRead);
                         message += byteArrayOutputStream.toString("UTF-8");
+                        Log.d(TAG, "Part of message: " + message);
                     }
+                    Log.d(TAG, "Full message: " + message);
                     // No information - add IP to the list
                     if (message.length() == 0) {
                         if (!socket.getInetAddress().equals(NetworkUtils.getIPAddress()))
                             MainActivity.addPhoneToList(new Phone(socket.getInetAddress()));
-                    } else
-                        switch (message) {
+                    } else {
+                        String firstPartOfMessage = message.split(NetworkService.MAGIC_CHAR)[0];
+                        Log.d(TAG, "firstPartOfMessage: " + firstPartOfMessage);
+                        switch (firstPartOfMessage) {
                             case NetworkService.ACTION_GETFILES:
-                                FileUtils.getFilesList();
+                                String files = FileUtils.getFilesList();
+                                SocketServerReplyThread replyThread = new SocketServerReplyThread(socket.getInetAddress().toString().substring(1), ServerTCP.getPort(), files);
+                                replyThread.run();
+                                break;
+                            case NetworkService.ACTION_LISTOFFILES:
+                                // TODO: Get message and read list
                                 break;
                         }
+                    }
 
                 } catch (IOException e) {
                     Log.e(TAG, "ServerThread.run() error");
@@ -93,31 +104,35 @@ public class ServerTCP {
 
     private class SocketServerReplyThread extends Thread {
 
+        private static final String TAG = "ServerTCP";
         private Socket hostThreadSocket;
+        private String files;
+        private int port;
+        private String address;
 
-        SocketServerReplyThread(Socket socket) {
-            hostThreadSocket = socket;
+        SocketServerReplyThread(String address, int port, String files) {
+            Log.d(TAG, "SocketServerReplyThread(" + address + ", " + port + ", " + files + ")");
+            this.address = address;
+            this.port = port;
+            this.files = files;
         }
 
         @Override
         public void run() {
+            String message = NetworkService.ACTION_LISTOFFILES + NetworkService.MAGIC_CHAR + files;
+            Log.d(TAG, "SocketServerReplyThread.run() with message: " + message);
             OutputStream outputStream;
-            String msgReply = "Hello from Server, you are connected";
-
             try {
+                hostThreadSocket = new Socket(address, port);
                 outputStream = hostThreadSocket.getOutputStream();
                 PrintStream printStream = new PrintStream(outputStream);
-                printStream.print(msgReply);
+                printStream.print(message);
+                printStream.flush();
                 printStream.close();
-
-                message += "replayed: " + msgReply + "\n";
-                Log.d(TAG, message);
-
             } catch (IOException e) {
                 e.printStackTrace();
-                message += "Something wrong! " + e.toString() + "\n";
+                Log.e(TAG, "SocketServerReplyThread(" + hostThreadSocket.getInetAddress().toString() + ", " + port + ", " + message + ")");
             }
-            Log.d(TAG, message);
         }
 
     }

@@ -3,7 +3,9 @@ package com.zperkowski.peersharing;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
@@ -49,29 +51,48 @@ public class ClientTCP extends AsyncTask<String, Void, String> {
     }
 
     private List getFiles(String address, int port) {
+        Log.d(TAG, "getFiles(" + address + ", " + port + ")");
+        // Prepare
+        String message = "";
+        int bytesRead;
+        byte[] buffer = new byte[1024];
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(1024);
         List files = new ArrayList();
-        Socket socket = send(address, port, NetworkService.ACTION_GETFILES);
-        //TODO: Wait for a respond with list of files
+        // Send request to get list of files from server
+        send(address, port, NetworkService.ACTION_GETFILES);
+        // Read list of files
+//        try {
+//            InputStream inputStream = socket.getInputStream();
+//            while ((bytesRead = inputStream.read(buffer)) != -1) {
+//                Log.d(TAG, "getFiles - Reading");
+//                byteArrayOutputStream.write(buffer, 0, bytesRead);
+//                message += byteArrayOutputStream.toString("UTF-8");
+//            }
+//            socket.close();
+//            Log.d(TAG, "List of files: " + files);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return files;
     }
 
     private void sendUnicast(String address, int port) {
+        Log.d(TAG, "sendUnicast(" + address + "," + port +")");
         send(address, port, "");
     }
 
-    private Socket send(String address, int port, String message) {
+    private void send(String address, int port, String message) {
+        Log.d(TAG, "send(" + address + ", " + port + ", " + message + ")");
         try {
-            Log.d(TAG, "sendUnicast(" + address + "," + port +")");
             socket = new Socket(address, port);
 
             OutputStream outputStream = socket.getOutputStream();
             PrintStream printStream = new PrintStream(outputStream);
             printStream.print(message);
+            printStream.flush();
             printStream.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return socket;
     }
 }

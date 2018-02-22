@@ -14,8 +14,10 @@ public class NetworkService extends IntentService {
     public static final String ACTION_DOWNLOAD = "com.zperkowski.peersharing.action.DOWNLOAD";
     public static final String ACTION_REFRESH = "com.zperkowski.peersharing.action.REFRESH";
     public static final String ACTION_GETFILES = "com.zperkowski.peersharing.action.GETFILES";
+    public static final String ACTION_LISTOFFILES = "com.zperkowski.peersharing.action.LISTOFFILES";
     public static final String ACTION_STARTSERVER = "com.zperkowski.peersharing.action.STARTSERVER";
     public static final String ACTION_STOPSERVER = "com.zperkowski.peersharing.action.STOPSERVER";
+    public static final String MAGIC_CHAR = "~";
 
     public static final String EXTRA_IP = "com.zperkowski.peersharing.extra.EXTRA_IP";
     public static final String EXTRA_PATH = "com.zperkowski.peersharing.extra.EXTRA_PATH";
