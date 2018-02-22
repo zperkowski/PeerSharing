@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
 
     private String manualAddress;
 
-    private static final int PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 0;
     private static final int PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
     public static void addPhoneToList(Phone phone) {
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                         recyclerView.getAdapter().notifyDataSetChanged();
                         Toast.makeText(getApplicationContext(), R.string.refreshed, Toast.LENGTH_SHORT).show();
                     }
-                }, 500);
+                }, 300);
 
             }
         });

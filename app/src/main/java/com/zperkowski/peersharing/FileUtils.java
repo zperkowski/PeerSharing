@@ -5,10 +5,13 @@ import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FileUtils {
     private static final String TAG = "FileUtils";
+
+    public static final List<String> sizes = Arrays.asList("B", "KB", "MB", "GB", "TB");
 
     /*
     getStringOfFiles returns a string that contains list of files.

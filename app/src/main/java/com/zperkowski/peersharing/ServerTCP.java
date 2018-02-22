@@ -82,7 +82,7 @@ public class ServerTCP {
                                 replyThread.run();
                                 break;
                             case NetworkService.ACTION_LISTOFFILES:
-                                FileUtils.getListOfFiles(message);
+                                FilesActivity.setFilesList(FileUtils.getListOfFiles(message));
                                 break;
                         }
                     }

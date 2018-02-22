@@ -10,13 +10,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.io.File;
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class FilesCardAdapter extends RecyclerView.Adapter<FilesCardAdapter.CardViewHolder> {
     final static private String TAG = "FilesCardAdapter";
 
-    private static List<File> fileList;
+    private static List<Files> fileList;
     private Context context;
     private static String deviceIp;
 
@@ -53,7 +53,7 @@ public class FilesCardAdapter extends RecyclerView.Adapter<FilesCardAdapter.Card
         }
     }
 
-    FilesCardAdapter(String ip, List<File> filesList, Context context) {
+    FilesCardAdapter(String ip, List<Files> filesList, Context context) {
         Log.d(TAG, "FilesCardAdapter(filesList)");
         this.deviceIp = ip;
         this.fileList = filesList;
@@ -74,10 +74,16 @@ public class FilesCardAdapter extends RecyclerView.Adapter<FilesCardAdapter.Card
         Log.d(TAG, "onBindViewHolder()");
         holder.fileName.setText(fileList.get(position).getName());
         holder.filePath.setText(fileList.get(position).getPath());
-        double fileSize = fileList.get(position).length();
-        while (fileSize > 1024.0)
+        double fileSize = fileList.get(position).getSize();
+        int numberOfDivs = 0;
+        while (fileSize > 1024.0) {
             fileSize /= 1024;
-        holder.fileSize.setText(String.valueOf(fileSize));
+            numberOfDivs ++;
+        }
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(2);
+        String text = String.valueOf(df.format(fileSize)) + FileUtils.sizes.get(numberOfDivs);
+        holder.fileSize.setText(text);
     }
 
     @Override
