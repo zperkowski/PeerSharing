@@ -9,7 +9,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.List;
 
 public class ServerTCP {
     private static final String TAG = "ServerTCP";
@@ -63,10 +62,12 @@ public class ServerTCP {
                     while ((bytesRead = inputStream.read(buffer)) != -1) {
                         Log.d(TAG, "Reading... bytesRead: " + bytesRead);
                         byteArrayOutputStream.write(buffer, 0, bytesRead);
-                        message += byteArrayOutputStream.toString("UTF-8");
+                        message = byteArrayOutputStream.toString("UTF-8");
                         Log.d(TAG, "Part of message: " + message);
                     }
+                    socket.close();
                     Log.d(TAG, "Full message: " + message);
+                    Log.d(TAG, "Len message: " + message.length());
                     // No information - add IP to the list
                     if (message.length() == 0) {
                         if (!socket.getInetAddress().equals(NetworkUtils.getIPAddress()))
@@ -76,12 +77,12 @@ public class ServerTCP {
                         Log.d(TAG, "firstPartOfMessage: " + firstPartOfMessage);
                         switch (firstPartOfMessage) {
                             case NetworkService.ACTION_GETFILES:
-                                String files = FileUtils.getFilesList();
+                                String files = FileUtils.getStringOfFiles();
                                 SocketServerReplyThread replyThread = new SocketServerReplyThread(socket.getInetAddress().toString().substring(1), ServerTCP.getPort(), files);
                                 replyThread.run();
                                 break;
                             case NetworkService.ACTION_LISTOFFILES:
-                                // TODO: Get message and read list
+                                FileUtils.getListOfFiles(message);
                                 break;
                         }
                     }
@@ -112,6 +113,7 @@ public class ServerTCP {
 
         SocketServerReplyThread(String address, int port, String files) {
             Log.d(TAG, "SocketServerReplyThread(" + address + ", " + port + ", " + files + ")");
+            Log.d(TAG, "SocketServerReplyThread files len: " + files.length());
             this.address = address;
             this.port = port;
             this.files = files;
@@ -121,13 +123,14 @@ public class ServerTCP {
         public void run() {
             String message = NetworkService.ACTION_LISTOFFILES + NetworkService.MAGIC_CHAR + files;
             Log.d(TAG, "SocketServerReplyThread.run() with message: " + message);
+            Log.d(TAG, "SocketServerReplyThread files len: " + files.length());
+            Log.d(TAG, "SocketServerReplyThread message len: " + message.length());
             OutputStream outputStream;
             try {
                 hostThreadSocket = new Socket(address, port);
                 outputStream = hostThreadSocket.getOutputStream();
                 PrintStream printStream = new PrintStream(outputStream);
                 printStream.print(message);
-                printStream.flush();
                 printStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
