@@ -55,8 +55,15 @@ public class FileUtils {
             files.add(new Files(splitString[i], Integer.valueOf(splitString[i+1]), splitString[i+2]));
             Log.d(TAG, files.get(files.size()-1).toString());
         }
-
-
         return files;
+    }
+
+    public static Files findFile(String path) {
+        for (Files file :
+                FilesActivity.getFilesList()) {
+            if (file.getPath().equals(path))
+                return file;
+        }
+        return null;
     }
 }

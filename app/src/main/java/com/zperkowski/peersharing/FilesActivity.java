@@ -24,6 +24,10 @@ public class FilesActivity extends AppCompatActivity {
         FilesActivity.filesList.addAll(filesList);
     }
 
+    public static List<Files> getFilesList() {
+        return filesList;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

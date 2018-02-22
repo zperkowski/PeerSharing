@@ -45,9 +45,14 @@ public class FilesCardAdapter extends RecyclerView.Adapter<FilesCardAdapter.Card
         public void onClick(View view) {
             Log.d(TAG, "onClick() " + String.valueOf(fileName.toString()));
             Intent intent = new Intent(itemView.getContext(), NetworkService.class);
-            intent.setAction(NetworkService.ACTION_GETFILES);
             intent.putExtra(NetworkService.EXTRA_IP, deviceIp);
             intent.putExtra(NetworkService.EXTRA_PATH, filePath.getText());
+            // If it's a folder then go deeper
+            if (fileName.getText().toString().substring(fileName.getText().toString().length()-1).equals("/")) {
+                intent.setAction(NetworkService.ACTION_GETFILES);
+            } else {    // If it's a file download it
+                intent.setAction(NetworkService.ACTION_DOWNLOAD);
+            }
             context.startService(intent);
             // TODO: Wait for the respond and reload the CardViewHolder
         }

@@ -2,9 +2,14 @@ package com.zperkowski.peersharing;
 
 import android.util.Log;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
@@ -17,6 +22,7 @@ public class ServerTCP {
     private ServerSocket serverSocket;
     private String message;
     private final static int PORT = 6666;
+    private final static int UPLOAD_PORT = 6667;
 
     public static ServerTCP getServer() {
         Log.d(TAG, "getServer()");
@@ -28,6 +34,10 @@ public class ServerTCP {
 
     public static int getPort() {
         return PORT;
+    }
+
+    public static int getUploadPort() {
+        return UPLOAD_PORT;
     }
 
     void startServer() {
@@ -65,7 +75,6 @@ public class ServerTCP {
                         message = byteArrayOutputStream.toString("UTF-8");
                         Log.d(TAG, "Part of message: " + message);
                     }
-                    socket.close();
                     Log.d(TAG, "Full message: " + message);
                     Log.d(TAG, "Len message: " + message.length());
                     // No information - add IP to the list
@@ -75,15 +84,19 @@ public class ServerTCP {
                     } else {
                         String firstPartOfMessage = message.split(NetworkService.MAGIC_CHAR)[0];
                         Log.d(TAG, "firstPartOfMessage: " + firstPartOfMessage);
+                        String socketAddress = socket.getInetAddress().toString().substring(1);
                         switch (firstPartOfMessage) {
                             case NetworkService.ACTION_GETFILES:
                                 String files = FileUtils.getStringOfFiles();
-                                SocketServerReplyThread replyThread = new SocketServerReplyThread(socket.getInetAddress().toString().substring(1), ServerTCP.getPort(), files);
+                                FilesReplyThread replyThread = new FilesReplyThread(socketAddress, ServerTCP.getPort(), files);
                                 replyThread.run();
                                 break;
                             case NetworkService.ACTION_LISTOFFILES:
                                 FilesActivity.setFilesList(FileUtils.getListOfFiles(message));
                                 break;
+                            case NetworkService.ACTION_DOWNLOAD:
+                                UploadReplyThread uploadReplyThread = new UploadReplyThread(socketAddress, ServerTCP.getUploadPort(), message);
+                                uploadReplyThread.run();
                         }
                     }
 
@@ -103,17 +116,60 @@ public class ServerTCP {
         }
     }
 
-    private class SocketServerReplyThread extends Thread {
+    private class UploadReplyThread extends Thread {
+        private static final String TAG = "STCP.UploadReplyThread";
+        private ServerSocket threadSocket;
+        private String path;
+        private String address;
+        private int port;
 
-        private static final String TAG = "ServerTCP";
-        private Socket hostThreadSocket;
+        UploadReplyThread(String address, int port, String path) {
+            Log.d(TAG, "UploadReplyThread(" + address + ", " + port + ", " + path + ")");
+            this.address = address;
+            this.port = port;
+            this.path = path;
+        }
+
+        @Override
+        public void run() {
+                try {
+                    threadSocket = new ServerSocket(port);
+                    Socket socket = threadSocket.accept();
+                    Log.d(TAG, "UploadReplyThread accepted");
+                    // Wait for the path
+                    InputStream istream = socket.getInputStream();
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(istream));
+                    path = bufferedReader.readLine();
+                    // Send the file
+                    Log.d(TAG, "UploadReplyThread path: " + path);
+                    File file = new File(path);
+                    Log.d(TAG, file.getPath() + " " + file.canRead());
+                    byte[] bytes = new byte[(int) file.length()];
+                    FileInputStream fileInputStream = new FileInputStream(file);
+                    BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+                    bufferedInputStream.read(bytes, 0, bytes.length);
+                    OutputStream outputStream = socket.getOutputStream();
+                    outputStream.write(bytes, 0, bytes.length);
+                    outputStream.flush();
+                    outputStream.close();
+                    Log.d(TAG, "UploadReplyThread file sent");
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+    }
+
+    private class FilesReplyThread extends Thread {
+        private static final String TAG = "STCP.FilesReplyThread";
+        private Socket threadSocket;
         private String files;
         private int port;
         private String address;
 
-        SocketServerReplyThread(String address, int port, String files) {
-            Log.d(TAG, "SocketServerReplyThread(" + address + ", " + port + ", " + files + ")");
-            Log.d(TAG, "SocketServerReplyThread files len: " + files.length());
+        FilesReplyThread(String address, int port, String files) {
+            Log.d(TAG, "FilesReplyThread(" + address + ", " + port + ", " + files + ")");
+            Log.d(TAG, "FilesReplyThread files len: " + files.length());
             this.address = address;
             this.port = port;
             this.files = files;
@@ -122,19 +178,19 @@ public class ServerTCP {
         @Override
         public void run() {
             String message = NetworkService.ACTION_LISTOFFILES + NetworkService.MAGIC_CHAR + files;
-            Log.d(TAG, "SocketServerReplyThread.run() with message: " + message);
-            Log.d(TAG, "SocketServerReplyThread files len: " + files.length());
-            Log.d(TAG, "SocketServerReplyThread message len: " + message.length());
+            Log.d(TAG, "FilesReplyThread.run() with message: " + message);
+            Log.d(TAG, "FilesReplyThread files len: " + files.length());
+            Log.d(TAG, "FilesReplyThread message len: " + message.length());
             OutputStream outputStream;
             try {
-                hostThreadSocket = new Socket(address, port);
-                outputStream = hostThreadSocket.getOutputStream();
+                threadSocket = new Socket(address, port);
+                outputStream = threadSocket.getOutputStream();
                 PrintStream printStream = new PrintStream(outputStream);
                 printStream.print(message);
                 printStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, "SocketServerReplyThread(" + hostThreadSocket.getInetAddress().toString() + ", " + port + ", " + message + ")");
+                Log.e(TAG, "FilesReplyThread(" + threadSocket.getInetAddress().toString() + ", " + port + ", " + message + ")");
             }
         }
 

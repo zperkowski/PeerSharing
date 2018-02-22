@@ -12,6 +12,7 @@ import android.util.Log;
 public class NetworkService extends IntentService {
     static final private String TAG = "NetworkService";
     public static final String ACTION_DOWNLOAD = "com.zperkowski.peersharing.action.DOWNLOAD";
+    public static final String ACTION_UPLOADING = "com.zperkowski.peersharing.action.UPLOADING";
     public static final String ACTION_REFRESH = "com.zperkowski.peersharing.action.REFRESH";
     public static final String ACTION_GETFILES = "com.zperkowski.peersharing.action.GETFILES";
     public static final String ACTION_LISTOFFILES = "com.zperkowski.peersharing.action.LISTOFFILES";
@@ -109,7 +110,7 @@ public class NetworkService extends IntentService {
     }
 
     private void downloadFile(String ip, String path) {
-        Log.d(TAG, "fileSize: " + ip + " path: " + path);
+        Log.d(TAG, "IP: " + ip + " path: " + path);
 
         Notification notificationDownloading = new Notification.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
@@ -124,13 +125,8 @@ public class NetworkService extends IntentService {
 
         NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nManager.notify(NOTIFICATION_DOWNLOAD, notificationDownloading);
-        synchronized (this) {
-            try {
-                wait(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        ClientTCP clientTCP = new ClientTCP();
+        clientTCP.execute(ip, NetworkService.ACTION_DOWNLOAD, String.valueOf(FileUtils.findFile(path).getSize()), path);
         nManager.notify(NOTIFICATION_DOWNLOAD, notificationDownloaded);
     }
 
