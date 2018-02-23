@@ -24,6 +24,9 @@ public class NetworkService extends IntentService {
     public static final String EXTRA_PATH = "com.zperkowski.peersharing.extra.EXTRA_PATH";
 
     public static final int NOTIFICATION_DOWNLOAD = 100;
+    private static NotificationManager nManager;
+    private static Notification notificationDownloading;
+    private static Notification notificationDownloaded;
 
     private Handler handler;
     private ClientUDP clientUDP;
@@ -112,21 +115,25 @@ public class NetworkService extends IntentService {
     private void downloadFile(String ip, String path) {
         Log.d(TAG, "IP: " + ip + " path: " + path);
 
-        Notification notificationDownloading = new Notification.Builder(this)
+        notificationDownloading = new Notification.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(getString(R.string.downloading))
                 .build();
-        Notification notificationDownloaded = new Notification.Builder(this)
+        notificationDownloaded = new Notification.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(getString(R.string.downloaded))
                 .build();
 
-        NotificationManager nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        nManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         nManager.notify(NOTIFICATION_DOWNLOAD, notificationDownloading);
         ClientTCP clientTCP = new ClientTCP();
         clientTCP.execute(ip, NetworkService.ACTION_DOWNLOAD, String.valueOf(FileUtils.findFile(path).getSize()), path);
+    }
+
+    public static void setNotificationDownloaded() {
+        Log.d(TAG, "setNotificationDownloaded()");
         nManager.notify(NOTIFICATION_DOWNLOAD, notificationDownloaded);
     }
 

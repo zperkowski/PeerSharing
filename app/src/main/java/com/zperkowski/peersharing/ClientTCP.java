@@ -5,19 +5,13 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ClientTCP extends AsyncTask<String, Void, String> {
     private String response = "";
@@ -46,19 +40,21 @@ public class ClientTCP extends AsyncTask<String, Void, String> {
             switch (arg0[1]){
                 case NetworkService.ACTION_GETFILES:
                     getFiles(address, ServerTCP.getPort());
-                    break;
+                    return NetworkService.ACTION_GETFILES;
                 case NetworkService.ACTION_DOWNLOAD:
                     int size = Integer.parseInt(arg0[2]);
                     String path = arg0[3];
                     downloadFile(address, ServerTCP.getPort(), size, path);
-                    break;
+                    return NetworkService.ACTION_DOWNLOAD;
             }
-        return ""; //TODO: Return something useful
+        return "";
     }
 
     @Override
     protected void onPostExecute(String result) {
-        Log.d(TAG, result);
+        Log.d(TAG, "onPostExecute: " + result);
+        if (result.equals(NetworkService.ACTION_DOWNLOAD))
+            NetworkService.setNotificationDownloaded();
         super.onPostExecute(result);
     }
 
@@ -74,6 +70,8 @@ public class ClientTCP extends AsyncTask<String, Void, String> {
         byte [] bytesOfFile  = new byte[sizeOfFile];
         int bytesRead, bytesCurrent;
         try {
+            // Turning on server on 2nd device is slower
+            Thread.sleep(250);
             Socket socket = new Socket(address, ServerTCP.getUploadPort());
             // Sending the path
             OutputStream ostream = socket.getOutputStream();
@@ -96,6 +94,8 @@ public class ClientTCP extends AsyncTask<String, Void, String> {
             bufferedOutputStream.flush();
             Log.d(TAG, "downloadFile: Read" + pathToSave);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
