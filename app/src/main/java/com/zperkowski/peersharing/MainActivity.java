@@ -2,8 +2,11 @@ package com.zperkowski.peersharing;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -63,19 +66,20 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new PhonesCardAdapter(phones, getApplicationContext()));
 
+        if (!isConnected())
+            connectionErrorDialog();
+        else
+            refreshListOfDevices();
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                intent.setAction(NetworkService.ACTION_REFRESH);
-                startService(intent);
-                new Handler().postDelayed(new Runnable() {
-                    public void run() {
-                        recyclerView.getAdapter().notifyDataSetChanged();
-                        Toast.makeText(getApplicationContext(), R.string.refreshed, Toast.LENGTH_SHORT).show();
-                    }
-                }, 300);
-
+                if (isConnected()) {
+                    refreshListOfDevices();
+                } else {
+                    connectionErrorDialog();
+                }
             }
         });
 
@@ -153,5 +157,39 @@ public class MainActivity extends AppCompatActivity {
                         });
         AlertDialog alert = alertDialogBuilder.create();
         alert.show();
+    }
+
+    private void refreshListOfDevices() {
+        intent.setAction(NetworkService.ACTION_REFRESH);
+        startService(intent);
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                recyclerView.getAdapter().notifyDataSetChanged();
+                Toast.makeText(getApplicationContext(), R.string.refreshed, Toast.LENGTH_SHORT).show();
+            }
+        }, 600);
+    }
+
+    public boolean isConnected() {
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    public void connectionErrorDialog() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!isFinishing()){
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle(R.string.connection_error)
+                            .setMessage(R.string.no_internet)
+                            .setCancelable(false)
+                            .setPositiveButton(R.string.ok,null)
+                            .show();
+                }
+            }
+        });
     }
 }
