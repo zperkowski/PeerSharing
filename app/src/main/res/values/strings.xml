@@ -11,6 +11,7 @@
     <string name="connection_error">Connection error</string>
     <string name="no_internet">You are not connected to the Internet</string>
     <string name="ok">Ok</string>
+    <string name="phone">Phone</string>
 
     <!-- Strings related to Settings -->
 

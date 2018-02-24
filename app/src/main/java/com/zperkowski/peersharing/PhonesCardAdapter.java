@@ -2,6 +2,7 @@ package com.zperkowski.peersharing;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -68,7 +69,8 @@ public class PhonesCardAdapter extends RecyclerView.Adapter<PhonesCardAdapter.Ca
     @Override
     public void onBindViewHolder(CardViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder()");
-        holder.name.setText(phoneList.get(position).getName());
+        String phonesName = context.getResources().getString(R.string.phone) + " " + String.valueOf(position+1);
+        holder.name.setText(phonesName);
         holder.ip.setText(phoneList.get(position).getAddress().toString());
     }
 
