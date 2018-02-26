@@ -14,7 +14,7 @@
  - Auto opening downloaded file
  - Changing folder for shared files
 ## Screenshots
-![1](readme/1.png)
-![2](readme/2.png)
-![3](readme/3.png)
-![3](readme/4.png)
+<img src="readme/1.png" width="200"/>
+<img src="readme/2.png" width="200"/>
+<img src="readme/3.png" width="200"/>
+<img src="readme/4.png" width="200"/>
