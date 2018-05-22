@@ -3,6 +3,10 @@ package com.zperkowski.peersharing;
 import android.os.Environment;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +16,7 @@ public class FileUtils {
     private static final String TAG = "FileUtils";
 
     public static final List<String> sizes = Arrays.asList("B", "KB", "MB", "GB", "TB");
-
+    public static String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
     /*
     getStringOfFiles returns a string that contains list of files.
     Every file contains information if it's a folder (slash on the end of the name)
@@ -23,7 +27,6 @@ public class FileUtils {
     "File1.txt~100~/path/1/~File2.txt~200~/path/1/~Folder/~0~/path/1/~"
      */
     public static String getStringOfFiles() {
-        String path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
         File downloadFolder = new File(path);
         Log.d(TAG, "Path: " + path + " Read: " + downloadFolder.canRead() + " Write: " + downloadFolder.canWrite());
         File[] files = downloadFolder.listFiles();
@@ -44,6 +47,28 @@ public class FileUtils {
         }
         Log.d(TAG, "getStringOfFiles: " + list);
         return list.toString();
+    }
+
+    public static JSONArray getJSONOfFiles() {
+        Log.d(TAG, "getJSONOfFiles: " + path);
+        File downloadFolder = new File(path);
+        File[] files = downloadFolder.listFiles();
+        JSONArray jFiles = new JSONArray();
+        JSONObject jFile;
+        for (int i = 0; i < files.length; i++) {
+            try {
+                jFile = new JSONObject();
+                jFile.put("name", files[i].getName());
+                jFile.put("size", files[i].length());
+                jFile.put("path", files[i].getAbsolutePath());
+                jFile.put("isFile", files[i].isFile());
+                jFiles.put(jFile);
+            } catch (JSONException e) {
+                Log.e(TAG, "getJSONOfFiles: i = " + i);
+                e.printStackTrace();
+            }
+        }
+        return jFiles;
     }
 
     public static List<Files> getListOfFiles(String stringOfFiles) {
