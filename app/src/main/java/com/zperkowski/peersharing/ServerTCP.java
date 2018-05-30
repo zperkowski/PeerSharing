@@ -77,9 +77,9 @@ public class ServerTCP {
                         Log.d(TAG, "Reading... bytesRead: " + bytesRead);
                         byteArrayOutputStream.write(buffer, 0, bytesRead);
                         message = byteArrayOutputStream.toString("UTF-8");
-                        Log.d(TAG, "Part of message: " + message);
+                        Log.d(TAG, "Part of message:\t" + message);
                     }
-                    Log.d(TAG, "Full message: " + message);
+                    Log.d(TAG, "Full message:\t" + message);
                     Log.d(TAG, "Len message: " + message.length());
                     // No information - add IP to the list
                     if (message.length() == 0) {
@@ -138,9 +138,16 @@ public class ServerTCP {
 
         UploadReplyThread(String address, int port, String path) {
             Log.d(TAG, "UploadReplyThread(" + address + ", " + port + ", " + path + ")");
-            this.address = address;
-            this.port = port;
-            this.path = path;
+            JSONArray jsonArray;
+            try {
+                jsonArray = new JSONArray(path);
+                this.path = jsonArray.get(1).toString();
+                this.address = address;
+                this.port = port;
+            } catch (JSONException e) {
+                Log.e(TAG, "UploadReplyThread: Parsing JSON fiailed");
+                e.printStackTrace();
+            }
         }
 
         @Override

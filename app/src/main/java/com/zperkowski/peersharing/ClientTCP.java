@@ -61,13 +61,16 @@ public class ClientTCP extends AsyncTask<String, Void, String> {
     }
 
     private void downloadFile(String address, int port, int sizeOfFile, String path) {
-        String message = NetworkService.ACTION_DOWNLOAD;
+        Log.d(TAG, "downloadFile: Sending download request: " + address + " " + port + " " + path);
+        JSONArray json = new JSONArray();
+        json.put(NetworkService.ACTION_DOWNLOAD);
+        json.put(path);
         Log.d(TAG, "downloadFile size: " + sizeOfFile);
         String pathToSave = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();
         String[] splitPath = path.split("/");
         pathToSave = pathToSave + "/" + splitPath[splitPath.length-1];
 
-        send(address, port, message);
+        send(address, port, json.toString());
 
         byte [] bytesOfFile  = new byte[sizeOfFile];
         int bytesRead, bytesCurrent;
