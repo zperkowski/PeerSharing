@@ -4,6 +4,8 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 
+import org.json.JSONArray;
+
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -103,7 +105,9 @@ public class ClientTCP extends AsyncTask<String, Void, String> {
     private void getFiles(String address, int port) {
         Log.d(TAG, "getFiles(" + address + ", " + port + ")");
         // Send request to get list of files from server
-        send(address, port, NetworkService.ACTION_GETFILES);
+        JSONArray jsonArray = new JSONArray();
+        jsonArray.put(NetworkService.ACTION_GETFILES);
+        send(address, port, jsonArray.toString());
     }
 
     private void sendUnicast(String address, int port) {

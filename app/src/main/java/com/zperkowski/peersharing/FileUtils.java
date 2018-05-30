@@ -49,12 +49,16 @@ public class FileUtils {
         return list.toString();
     }
 
+    /*
+    First element of the JSONArray is information that it's containing a list of files
+     */
     public static JSONArray getJSONOfFiles() {
         Log.d(TAG, "getJSONOfFiles: " + path);
         File downloadFolder = new File(path);
         File[] files = downloadFolder.listFiles();
         JSONArray jFiles = new JSONArray();
         JSONObject jFile;
+        jFiles.put(NetworkService.ACTION_LISTOFFILES);
         for (int i = 0; i < files.length; i++) {
             try {
                 jFile = new JSONObject();

@@ -1,6 +1,10 @@
 package com.zperkowski.peersharing;
 
+import android.util.JsonReader;
 import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -82,21 +86,30 @@ public class ServerTCP {
                         if (!socket.getInetAddress().equals(NetworkUtils.getIPAddress()))
                             MainActivity.addPhoneToList(new Phone(socket.getInetAddress()));
                     } else {
-                        String firstPartOfMessage = message.split(NetworkService.MAGIC_CHAR)[0];
-                        Log.d(TAG, "firstPartOfMessage: " + firstPartOfMessage);
-                        String socketAddress = socket.getInetAddress().toString().substring(1);
-                        switch (firstPartOfMessage) {
-                            case NetworkService.ACTION_GETFILES:
-                                String files = FileUtils.getStringOfFiles();
-                                FilesReplyThread replyThread = new FilesReplyThread(socketAddress, ServerTCP.getPort(), files);
-                                replyThread.run();
-                                break;
-                            case NetworkService.ACTION_LISTOFFILES:
-                                FilesActivity.setFilesList(FileUtils.getListOfFiles(message));
-                                break;
-                            case NetworkService.ACTION_DOWNLOAD:
-                                UploadReplyThread uploadReplyThread = new UploadReplyThread(socketAddress, ServerTCP.getUploadPort(), message);
-                                uploadReplyThread.run();
+                        JSONArray json;
+                        try {
+                            json = new JSONArray(message);
+                            String firstPartOfMessage = json.getString(0);
+                            Log.d(TAG, "firstPartOfMessage: " + firstPartOfMessage);
+                            String socketAddress = socket.getInetAddress().toString().substring(1);
+                            switch (firstPartOfMessage) {
+                                case NetworkService.ACTION_GETFILES:
+    //                                String files = FileUtils.getStringOfFiles();
+                                    String files = FileUtils.getJSONOfFiles().toString();
+                                    FilesReplyThread replyThread = new FilesReplyThread(socketAddress, ServerTCP.getPort(), files);
+                                    replyThread.run();
+                                    break;
+                                case NetworkService.ACTION_LISTOFFILES:
+                                    FilesActivity.setFilesList(FileUtils.getListOfFiles(message));
+                                    break;
+                                case NetworkService.ACTION_DOWNLOAD:
+                                    UploadReplyThread uploadReplyThread = new UploadReplyThread(socketAddress, ServerTCP.getUploadPort(), message);
+                                    uploadReplyThread.run();
+                            }
+                        } catch (JSONException e) {
+                            Log.e(TAG, "run: Parsing JSON failed");
+                            e.printStackTrace();
+                            break;
                         }
                     }
 
@@ -177,20 +190,19 @@ public class ServerTCP {
 
         @Override
         public void run() {
-            String message = NetworkService.ACTION_LISTOFFILES + NetworkService.MAGIC_CHAR + files;
-            Log.d(TAG, "FilesReplyThread.run() with message: " + message);
+//            String message = NetworkService.ACTION_LISTOFFILES + NetworkService.MAGIC_CHAR + files;
+            Log.d(TAG, "FilesReplyThread.run() with message: " + files);
             Log.d(TAG, "FilesReplyThread files len: " + files.length());
-            Log.d(TAG, "FilesReplyThread message len: " + message.length());
             OutputStream outputStream;
             try {
                 threadSocket = new Socket(address, port);
                 outputStream = threadSocket.getOutputStream();
                 PrintStream printStream = new PrintStream(outputStream);
-                printStream.print(message);
+                printStream.print(files);
                 printStream.close();
             } catch (IOException e) {
                 e.printStackTrace();
-                Log.e(TAG, "FilesReplyThread(" + threadSocket.getInetAddress().toString() + ", " + port + ", " + message + ")");
+                Log.e(TAG, "FilesReplyThread(" + threadSocket.getInetAddress().toString() + ", " + port + ", " + files + ")");
             }
         }
 
