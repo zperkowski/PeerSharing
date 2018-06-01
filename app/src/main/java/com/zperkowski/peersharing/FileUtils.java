@@ -87,6 +87,25 @@ public class FileUtils {
         return files;
     }
 
+    public static List<Files> getListOfFilesFromJSON(JSONArray jsonArray) {
+        Log.d(TAG, "getListOfFilesFromJSON");
+        List<Files> files = new ArrayList<>();
+        // First element is just an information NetworkService.ACTION_LISTOFFILES.
+        for (int i = 1; i < jsonArray.length(); i++) {
+            try {
+                JSONObject object = jsonArray.getJSONObject(i);
+                files.add(new Files(
+                        (String) object.get("name"),
+                        (int) object.get("size"),
+                        (String) object.get("path")
+                ));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return files;
+    }
+
     public static Files findFile(String path) {
         for (Files file :
                 FilesActivity.getFilesList()) {

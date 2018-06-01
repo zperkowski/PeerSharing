@@ -94,13 +94,14 @@ public class ServerTCP {
                             String socketAddress = socket.getInetAddress().toString().substring(1);
                             switch (firstPartOfMessage) {
                                 case NetworkService.ACTION_GETFILES:
-    //                                String files = FileUtils.getStringOfFiles();
+//                                    String files = FileUtils.getStringOfFiles();
                                     String files = FileUtils.getJSONOfFiles().toString();
                                     FilesReplyThread replyThread = new FilesReplyThread(socketAddress, ServerTCP.getPort(), files);
                                     replyThread.run();
                                     break;
                                 case NetworkService.ACTION_LISTOFFILES:
-                                    FilesActivity.setFilesList(FileUtils.getListOfFiles(message));
+//                                    FilesActivity.setFilesList(FileUtils.getListOfFiles(message));
+                                      FilesActivity.setFilesList(FileUtils.getListOfFilesFromJSON(json));
                                     break;
                                 case NetworkService.ACTION_DOWNLOAD:
                                     UploadReplyThread uploadReplyThread = new UploadReplyThread(socketAddress, ServerTCP.getUploadPort(), message);
